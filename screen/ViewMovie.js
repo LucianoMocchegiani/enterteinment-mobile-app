@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Dimensions } from 'react-native'
 import { getMovieDetail } from '../firebase/endpoints/movies'
 import styled from 'styled-components/native'
 import { StatusBar } from 'expo-status-bar'
 import Header from '../components/Header'
-import { Video } from 'expo-av';
-import { useAuth } from '../context/authContext'
 import { useRoute } from '@react-navigation/native'
-
-
+import CheckMyList from '../components/CheckMyListMovie'
+import { Video } from 'expo-av';
+import { useStorage } from '../context/storageContext'
+import { Feather } from '@expo/vector-icons'
 import {
     useFonts,
     Montserrat_200ExtraLight,
@@ -18,7 +18,6 @@ import {
     Montserrat_700Bold,
     Montserrat_800ExtraBold
 } from "@expo-google-fonts/montserrat";
-
 
 const Container = styled.ScrollView`
 	flex: 1;
@@ -160,8 +159,12 @@ const ActionButtonLabel = styled.Text`
 `
 
 const ViewMovie = ({ navigation }) => {
-    const {user} = useAuth()
     const {params} =  useRoute()
+    const videoRef = useRef(null);
+    const dataRef = useRef(null)
+    const statusRef = useRef(null)
+    const {setKeepWatchingMovies, getPositionMillisMovie}=  useStorage()
+
     const [state, setState]= useState({
         success: null, 
         message: null,
@@ -174,16 +177,15 @@ const ViewMovie = ({ navigation }) => {
             message: message,
             data: data
         })
+        dataRef.current=data
+        await setStatusVideo(data)
+        statusRef.current= await videoRef.current.getStatusAsync()
     }
     useEffect(()=>{
         handleSetState()
-        console.log(params)
         return(()=>{
-            setState({
-                success: null, 
-                message: null,
-                data: null
-            })
+            console.log(statusRef)
+            updateStatusVideo(dataRef.current)
         })
     },[params])
     const [loading, setLoading] = useState(false)
@@ -196,7 +198,40 @@ const ViewMovie = ({ navigation }) => {
         Montserrat_700Bold,
         Montserrat_800ExtraBold
     });
-
+    const updateStatusVideo = async (data, status)=>{
+        try{
+            if(!data){return}
+            const {positionMillis} = status
+            const movie = {...state.data, positionMillis:positionMillis}
+            let response = await setKeepWatchingMovies(movie)
+            return response
+        }catch(error){
+            let response = { errorIn:'updateStatusVideo', message:error.message, success:false}
+            console.log(response)
+            return response
+        }
+        
+    }
+    const algo = async()=>{
+        console.log('----------sdadadasd-------------')
+        let response =await updateStatusVideo(dataRef.current)
+        return console.log(response)
+    }
+    const setStatusVideo = async (movie)=>{
+        try{
+            if(!state.data){return}
+            let positionMillis= getPositionMillisMovie(movie)
+            let status = await videoRef.current.getStatusAsync()
+            let data = await videoRef.current.setStatusAsync({...status,...positionMillis})
+            let response= {succes:true, data:data}
+            return response
+        }catch(error){
+            let response = { errorIn:'setStatusVideo', message:error.message, success:false}
+            console.log(response)
+            return response
+        }
+    }
+    // getStatusAsync, setStatusAsync, pauseAsync, playAsync
     return fontsLoaded && !loading ? (
         <>
             <StatusBar
@@ -204,10 +239,10 @@ const ViewMovie = ({ navigation }) => {
                 backgroundColor='transparent'
                 barStyle='light-content'
             />
-
             <Container>
                 <Header login={true} goBack={navigation.goBack} />
                 <Video
+                    ref={videoRef}
                     source={{
                         uri: `https://firebasestorage.googleapis.com/v0/b/entertainment-app-87f62.appspot.com/o/m-videos%2F${params?.id}?alt=media&token=6bf5d8cf-f5e3-4bcb-bdaa-0af7aee9f8db`
                     }}
@@ -224,11 +259,15 @@ const ViewMovie = ({ navigation }) => {
                 <MovieSubDetails>
                     <MovieBadge>13+</MovieBadge>
                     <Subtitle>{state?.data?.release_date}</Subtitle>
+                    <CheckMyList movie={state.data}/>
                 </MovieSubDetails>
                 <ActionButtons>
-                    <Play activeOpacity={0.5}>
+                    {/* <Play 
+                        onPress={()=>algo()}
+                        activeOpacity={0.5}>
+                        <Feather name='play' size={22} color='black' />
                         <TextButtonPlay>Play</TextButtonPlay>
-                    </Play>
+                    </Play> */}
                 </ActionButtons>
                 <MovieDescription>
                     {state?.data?.overview}
@@ -255,35 +294,6 @@ const ViewMovie = ({ navigation }) => {
                         })
                     }
                 </Tags>
-
-                <ActionButtons2>
-                    {/* {
-                        movie && user?.list.includes(movie.id) ? (
-                            <ActionButton activeOpacity={0.5} onPress={() => {
-                                console.log('funcion api my list delete')
-                            }}>
-                                <Feather name="check" size={35} color="white" />
-                                <ActionButtonLabel>My List</ActionButtonLabel>
-                            </ActionButton>
-                        ) : (
-                                <ActionButton activeOpacity={0.5} onPress={() => {
-                                  console.log('funcion api add my list')
-
-                                }}>
-                                    <Ionicons name="add-outline" size={35} color="white" />
-                                    <ActionButtonLabel>My List</ActionButtonLabel>
-                                </ActionButton>
-                            )
-                    } */}
-                    {/* <ActionButton activeOpacity={0.5}>
-                        <AntDesign name="like2" size={30} color="white" style={{ marginBottom: 7 }} />
-                        <ActionButtonLabel>Rate</ActionButtonLabel>
-                    </ActionButton> */}
-                    {/* <ActionButton activeOpacity={0.5}>
-                        <AntDesign name="sharealt" size={27} color="white" style={{ marginBottom: 7 }} />
-                        <ActionButtonLabel>Share</ActionButtonLabel>
-                    </ActionButton> */}
-                </ActionButtons2>
             </Container>
         </>
     ) : (

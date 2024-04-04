@@ -110,9 +110,6 @@ const Profiles = ({navigation}) => {
             return Alert.alert('Hubo un problema', error.message)
         }
     }
-    useEffect(()=>{
-        console.log(profiles)
-    },[profiles])
     return fontsLoaded && (
         <>
             <StatusBar

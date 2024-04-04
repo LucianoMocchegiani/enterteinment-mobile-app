@@ -1,14 +1,16 @@
 import React, {useState} from 'react'
-import { StatusBar, Dimensions } from 'react-native'
+import { StatusBar, Dimensions, View} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import styled from 'styled-components/native'
 import Header from '../components/Header'
 import Hero from '../components/Hero'
 import Movies from '../components/Movies'
-import {useAuth} from '../context/authContext'
 import { useNavigation } from '@react-navigation/native'
-import SelectComponent from '../components/Select'
-
+import Genres from '../components/GenresForMovies'
+import Platforms from '../components/SelectPlatform'
+import AllMovies from '../components/AllMovies'
+import KeepWatchingMovies from '../components/KeepWatchingMovies'
+const { height, width } = Dimensions.get('window')
 const Container = styled.ScrollView`
 	flex: 1;
 	background-color: #000;
@@ -27,12 +29,18 @@ const Gradient = styled(LinearGradient)`
 
 const MoviesSection = () => {
 
-	const {user} = useAuth()
-	const [movies, setMovies] = useState([]);
-    const [platform, setPlatform]=useState({id:'ninguna',name:'ninguna'})
-    const [genre, setGenre]=useState({id:'ninguna',name:'ninguna'})
-    const [label, setLabel]=useState({id:'ninguna',name:'ninguna'})
-    const [video, setVideo]=useState({id:'todas',name:'todas'})
+	const [selectPlatform, setSelectPlatform] = useState({
+        id:'Ninguna',
+        name:'Ninguna'
+    })
+	const [selectGenre, setSelectGenre] = useState({
+        id:'Ninguno',
+        name:'Ninguno'
+    })
+	const [selectLabel, setSelectLabel] = useState({
+        id:'Ninguna',
+        name:'Ninguna'
+    })
 	const navigation = useNavigation();
 
 	return (
@@ -53,20 +61,28 @@ const MoviesSection = () => {
 							'rgba(0,0,0,0.0)',
 							'rgba(0,0,0,1)'
 						]}>
+						<View style={{width:width, alignItems:'center', paddingTop:20}}>
+							<Genres  selectGenre={selectGenre} setSelectGenre={setSelectGenre}/>
+							<Platforms selectPlatform={selectPlatform} setSelectPlatform={setSelectPlatform}/>
+						</View>
 						{/* <Header login={true} navigation={navigation} /> */}
 						<Hero/>
 					</Gradient>
 				</Poster>
-				
+				{ selectGenre.id !=='Ninguno'?
 				<>
-					{/* <Movies text='Lo mas visto' label={{id:'ninguna',name:'ninguna'}} requestType = {'generic'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:'ninguna',name:'ninguna'}} />
-					<Movies text='Clasicos' label={{id:'ninguna',name:'ninguna'}} requestType = {'generic'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:'ninguna',name:'ninguna'}} /> */}
-					<Movies text='Romance' label={{id:'ninguna',name:'ninguna'}} requestType = {'genres'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:10749,name:'Romance'}} />
-					<Movies text='Comedia' label={{id:'ninguna',name:'ninguna'}} requestType = {'genres'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:35,name:'Comedia'}} />
-					<Movies text='Familia' label={{id:'ninguna',name:'ninguna'}} requestType = {'genres'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:10751,name:'Familia'}} />
-					<Movies text='Acción' label={{id:'ninguna',name:'ninguna'}} requestType = {'genres'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:28,name:'Acción'}} />
-					<Movies text='Ciencia ficción' label={{id:'ninguna',name:'ninguna'}} requestType = {'genres'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:878,name:'Ciencia ficción'}} />
+					<AllMovies selectGenre={selectGenre} selectPlatform={selectPlatform} selectLabel={selectLabel}/>
+				</>:
+
+				<>
+					<KeepWatchingMovies/>
+					<Movies text='Comedia' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id: 35,name: "Comedia"}} />
+					<Movies text='Familia' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:10751, name:'Familia'}} />
+					<Movies text='Acción' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id: 28,name: "Acción"}} />
+					<Movies text='Ciencia ficción' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:878, name:'Ciencia ficción'}} />
+					<Movies text='Romance' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:10749 ,name:'Romance'}} />
 				</>
+				}		
 			</Container>
 		</>
 	)

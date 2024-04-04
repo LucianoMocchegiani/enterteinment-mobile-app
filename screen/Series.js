@@ -1,24 +1,27 @@
-import React, {useState} from 'react'
-import { StatusBar, Dimensions } from 'react-native'
+import React, { useState } from 'react'
+import { StatusBar, Dimensions, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import styled from 'styled-components/native'
 import Header from '../components/Header'
 import Hero from '../components/Hero'
-import Movies from '../components/Series'
-import {useAuth} from '../context/authContext'
+import Series from '../components/Series'
 import { useNavigation } from '@react-navigation/native'
-import SelectComponent from '../components/Select'
+import Genres from '../components/GenresForSeries'
+import Platforms from '../components/SelectPlatform'
+import AllSeries from '../components/AllSeries'
+import KeepWatchingSeries from '../components/KeepWatchingSeries'
+const { height, width } = Dimensions.get('window')
 
 const Container = styled.ScrollView`
 	flex: 1;
 	background-color: #000;
-	min-height: ${(Dimensions.get('window').height)}px;
+	min-height: ${height}px;
 	height: auto;
 `
 
 const Poster = styled.ImageBackground`
 	width: 100%;
-	height: ${(Dimensions.get('window').height * 81) / 100}px;
+	height: ${(height * 81) / 100}px;
 `
 
 const Gradient = styled(LinearGradient)`
@@ -27,12 +30,18 @@ const Gradient = styled(LinearGradient)`
 
 const  SeriesSection = () => {
 
-	const {user} = useAuth()
-	const [movies, setMovies] = useState([]);
-    const [platform, setPlatform]=useState({id:'ninguna',name:'ninguna'})
-    const [genre, setGenre]=useState({id:'ninguna',name:'ninguna'})
-    const [label, setLabel]=useState({id:'ninguna',name:'ninguna'})
-    const [video, setVideo]=useState({id:'todas',name:'todas'})
+	const [selectPlatform, setSelectPlatform] = useState({
+        id:'Ninguna',
+        name:'Ninguna'
+    })
+	const [selectGenre, setSelectGenre] = useState({
+        id:'Ninguno',
+        name:'Ninguno'
+    })
+	const [selectLabel, setSelectLabel] = useState({
+        id:'Ninguna',
+        name:'Ninguna'
+    })
 	const navigation = useNavigation();
 
 	return (
@@ -53,20 +62,27 @@ const  SeriesSection = () => {
 							'rgba(0,0,0,0.0)',
 							'rgba(0,0,0,1)'
 						]}>
+						<View style={{width:width, alignItems:'center', paddingTop:20}}>
+							<Genres  selectGenre={selectGenre} setSelectGenre={setSelectGenre}/>
+							<Platforms selectPlatform={selectPlatform} setSelectPlatform={setSelectPlatform}/>
+						</View>
 						{/* <Header login={true} navigation={navigation} /> */}
 						<Hero/>
 					</Gradient>
 				</Poster>
-				
+				{ selectGenre.id !=='Ninguno'?
 				<>
-					{/* <Movies text='Lo mas visto' label={{id:'ninguna',name:'ninguna'}} requestType = {'generic'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:'ninguna',name:'ninguna'}} />
-					<Movies text='Clasicos' label={{id:'ninguna',name:'ninguna'}} requestType = {'generic'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:'ninguna',name:'ninguna'}} /> */}
-					<Movies text='Romance' label={{id:'ninguna',name:'ninguna'}} requestType = {'genres'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:10749,name:'Romance'}} />
-					<Movies text='Comedia' label={{id:'ninguna',name:'ninguna'}} requestType = {'genres'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:35,name:'Comedia'}} />
-					<Movies text='Familia' label={{id:'ninguna',name:'ninguna'}} requestType = {'genres'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:10751,name:'Familia'}} />
-					<Movies text='Acción' label={{id:'ninguna',name:'ninguna'}} requestType = {'genres'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:28,name:'Acción'}} />
-					<Movies text='Ciencia ficción' label={{id:'ninguna',name:'ninguna'}} requestType = {'genres'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:878,name:'Ciencia ficción'}} />
+					<AllSeries selectGenre={selectGenre} selectPlatform={selectPlatform} selectLabel={selectLabel}/>
+				</>:
+				<>
+					<KeepWatchingSeries/>
+					<Series text='Drama' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:18,name:'Drama'}} />
+					<Series text='Comedia' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:35,name:'Comedia'}} />
+					{/* <Series text='Familia' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:10751,name:'Familia'}} /> */}
+					<Series text='Sci-Fi & Fantasy' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:10765,name:'Sci-Fi & Fantasy'}} />
+					<Series text='War & Politics' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:10768,name:'War & Politics'}} />
 				</>
+				}
 			</Container>
 		</>
 	)

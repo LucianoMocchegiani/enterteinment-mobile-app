@@ -31,10 +31,11 @@ const MovieCard = styled.View`
 `
 
 const Movies = ({ 
-	label={id:'ninguna',name:'ninguna'}, 
+	label={id:'Ninguna',name:'Ninguna'}, 
 	requestType = 'generic', 
-	platform={id:'ninguna',name:'ninguna'}, 
-	genre={id:'ninguna',name:'ninguna'}, text='' }) => {
+	platform={id:'Ninguna',name:'Ninguna'}, 
+	genre={id:'Ninguno',name:'Ninguno'}, 
+	text='' }) => {
 	const [item, setItem] = useState([]);
 	const navigation = useNavigation();
 	async function fetchData(){
@@ -46,15 +47,14 @@ const Movies = ({
 			video:{id:'todas',name:'todas'},
 			scroll:false, 
 			setState:setItem, 
-			prevState:item,
+			prevState:[],
 		}
-		let responce = await getMovies(options)
-		console.log(responce)
+		const {data, success, message} = await getMovies(options)
+		setItem(data)
 	}
 	useEffect(() => {
 		fetchData()
-	}, []);
-
+	}, [platform]);
 	return (
 		<Container>
 			<Label>{text}</Label>

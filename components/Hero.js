@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
 import styled from 'styled-components/native'
-
 import { Feather, Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { useAuth } from '../context/authContext'

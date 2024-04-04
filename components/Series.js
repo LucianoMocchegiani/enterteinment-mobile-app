@@ -32,10 +32,10 @@ const MovieCard = styled.View`
 `
 
 const Series = ({ 
-	label={id:'ninguna',name:'ninguna'}, 
+	label={id:'Ninguna',name:'Ninguna'}, 
 	requestType = 'generic', 
-	platform={id:'ninguna',name:'ninguna'}, 
-	genre={id:'ninguna',name:'ninguna'}, 
+	platform={id:'Ninguna',name:'Ninguna'}, 
+	genre={id:'Ninguno',name:'Ninguno'}, 
 	text='' }) => {
 	const [item, setItem] = useState([]);
 	const navigation = useNavigation();
@@ -48,15 +48,14 @@ const Series = ({
 			video:{id:'todas',name:'todas'},
 			scroll:false, 
 			setState:setItem, 
-			prevState:item,
+			prevState:[],
 		}
-		let responce = await getSeries(options)
-		console.log(responce)
+		const {data, success} = await getSeries(options)
+		setItem(data)
 	}
 	useEffect(() => {
 		fetchData()
-	}, []);
-
+	}, [platform]);
 	return (
 		<Container>
 			<Label>{text}</Label>

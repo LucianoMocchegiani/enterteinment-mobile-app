@@ -6,8 +6,7 @@ import { getSeasonDetail } from '../firebase/endpoints/seasons'
 import styled from 'styled-components/native'
 import { StatusBar } from 'expo-status-bar'
 import Header from '../components/Header'
-import { Video } from 'expo-av';
-import { useAuth } from '../context/authContext'
+import { Video, getStatusAsync, setStatusAsync, pauseAsync, playAsync, } from 'expo-av';
 import { useRoute } from '@react-navigation/native'
 import SelectComponent from '../components/Select'
 import {
@@ -20,17 +19,13 @@ import {
     Montserrat_800ExtraBold
 } from "@expo-google-fonts/montserrat";
 import { Feather } from '@expo/vector-icons'
+import CheckMyList from '../components/ChekMyListSerie'
+
 const Container = styled.ScrollView`
 	flex: 1;
 	background-color: #000;
     min-height: ${(Dimensions.get('window').height)}px;
 	height: auto;
-`
-
-const HeaderIcons = styled.View`
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
 `
 
 const Title = styled.Text`
@@ -85,23 +80,6 @@ const TextButtonPlay = styled.Text`
 	padding-left: 5px;
 `
 
-const Download = styled.TouchableOpacity`
-	flex-direction: row;
-	background-color: #262626;
-	width: 95%;
-	height: 32px;
-	border-radius: 2px;
-	align-items: center;
-	justify-content: center;
-`
-
-const TextButtonDownload = styled.Text`
-	font-size: 15px;
-    font-weight: 700;
-    color: white;
-    padding-left: 5px;
-`
-
 const ActionButtons = styled.View`
     flex-direction: column;
     width: 100%;
@@ -150,20 +128,6 @@ const ActionButtons2 = styled.View`
     justify-content: center;
     margin: 20px;
     align-items: center;
-`
-
-const ActionButton = styled.TouchableOpacity`
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 30px;
-    margin-top: 20px;
-`
-
-const ActionButtonLabel = styled.Text`
-    color: white;
-    font-family: "Montserrat_300Light";
-    font-size: 15px;
 `
 
 const Episode = ({array, setSelect, select, episode, setEpisode, serie_id}) =>{
@@ -239,7 +203,6 @@ const Season = ({array, setSelect, select, season, setSeason, serie_id}) =>{
 }
 
 const ViewEpisode = ({ navigation }) => {
-    const {user} = useAuth()
     const {params} =  useRoute()
     const [state, setState]= useState({
         success: null, 
@@ -325,9 +288,12 @@ const ViewEpisode = ({ navigation }) => {
 					    <Feather name='info' size={22} color='#FFF' />
 					    <TextButton>Info</TextButton>
 				    </Button>
+                    <CheckMyList serie={state.data}/>
                 </MovieSubDetails>
                 <ActionButtons>
-                    <Play activeOpacity={0.5}>
+                    <Play 
+                        onPress={playAsync()}
+                        activeOpacity={0.5}>
                         <Feather name='play' size={22} color='black' />
                         <TextButtonPlay>Play</TextButtonPlay>
                     </Play>

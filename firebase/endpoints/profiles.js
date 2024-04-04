@@ -18,7 +18,23 @@ export const postProfile=  async (dataEntry)=>{
     try{
         let response = { success:false, message:'Reintente nuevamente en unos momentos' };
         const { name, userStorage} = dataEntry
-        data = { account_id:userStorage.id, name:name, avatar:null, my_list_movies:[], my_list_series:[], finishied:[], whaching_now:[], updated_date:Timestamp.now(), created_date:Timestamp.now()}
+        data = { 
+            account_id:userStorage.id, 
+            name:name, 
+            my_list_movies:[], 
+            my_list_series:[], 
+            finishied_movies:[], 
+            finishied_series:[],
+            whaching_now:[], 
+            keep_watching_series:[],
+            keep_watching_movies:[],
+            whaching_now_series:[],
+            whaching_now_movies:[],
+            last_conection:Timestamp.now(),
+            online:false,
+            created_date:Timestamp.now(),
+            updated_date:Timestamp.now() 
+        }
         const selectedCollection = collection(db, `profiles`);
         const resolved = await addDoc(selectedCollection, data)
         const id = resolved._key.path.segments[1]
@@ -40,16 +56,33 @@ export const postProfile=  async (dataEntry)=>{
 export const putProfile=  async (data)=>{
     try{
         let response = { success:false, message:'Reintente nuevamente en unos momentos' };
-        const { name, email, id, my_list_movies, my_list_series, finishied, whaching_now} = data
-        data = { account_id:email, name:name, my_list_movies:my_list_movies, my_list_series:my_list_series, finishied:finishied, whaching_now:whaching_now, updated_date:Timestamp.now() }
+        const { name, account_id, id, my_list_movies, my_list_series, finishied_movies, finishied_series, keep_watching_series, keep_watching_movies, whaching_now_series, whaching_now_movies, created_date, last_conection, online} = data
+        
+        data = { 
+            id: id,
+            account_id:account_id, 
+            name:name, 
+            my_list_movies:my_list_movies, 
+            my_list_series:my_list_series, 
+            finishied_movies:finishied_movies, 
+            finishied_series:finishied_series,
+            keep_watching_series:keep_watching_series,
+            keep_watching_movies:keep_watching_movies,
+            whaching_now_series:whaching_now_series,
+            whaching_now_movies:whaching_now_movies,
+            created_date:created_date,
+            last_conection:Timestamp.now(),
+            online:online,
+            updated_date:Timestamp.now() 
+        }
         const selectedDoc = doc(db, `profiles/${id}`);
         const resolved = await setDoc(selectedDoc, data)
         
-        response = { success:true, message:'Perfil creado', data: resolved};
+        response = { success:true, message:'Perfil Actualizado', data: resolved};
         return response
     }catch(error){
         let response = { success:false, message:error.message, };
-        console.log(response)
+        console.log({errorIn:'putProfile',...response})
         return response
     }
 }

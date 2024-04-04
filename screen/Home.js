@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useLayoutEffect } from 'react'
+import React, { useState } from 'react'
 import { StatusBar, Dimensions } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import styled from 'styled-components/native'
 import Header from '../components/Header'
 import Hero from '../components/Hero'
 import Movies from '../components/Movies'
+import Series from '../components/Series'
 import HeaderTabs from '../components/HeaderTabs';
-import {useAuth} from '../context/authContext'
+
 
 const Container = styled.ScrollView`
 	flex: 1;
@@ -26,11 +27,18 @@ const Gradient = styled(LinearGradient)`
 
 const Home = ({ navigation }) => {
 
-	const {user} = useAuth()
-    const [platform, setPlatform]=useState({id:'ninguna',name:'ninguna'})
-    const [genre, setGenre]=useState({id:'ninguna',name:'ninguna'})
-    const [label, setLabel]=useState({id:'ninguna',name:'ninguna'})
-    const [video, setVideo]=useState({id:'todas',name:'todas'})
+	const [selectPlatform, setSelectPlatform] = useState({
+        id:'Ninguna',
+        name:'Ninguna'
+    })
+	const [selectGenre, setSelectGenre] = useState({
+        id:'Ninguno',
+        name:'Ninguno'
+    })
+	const [selectLabel, setSelectLabel] = useState({
+        id:'Ninguna',
+        name:'Ninguna'
+    })
 	return (
 		<>
 			<StatusBar
@@ -54,9 +62,8 @@ const Home = ({ navigation }) => {
 					</Gradient>
 				</Poster>
 				<>
-					<Movies text='Popular en Nigth' label={{id:'ninguna',name:'ninguna'}} requestType = {'generic'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:'ninguna',name:'ninguna'}} />
-					<Movies text='Top Movies' label={{id:'ninguna',name:'ninguna'}} requestType = {'generic'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:'ninguna',name:'ninguna'}} />
-					<Movies text='Top Series' label={{id:'ninguna',name:'ninguna'}} requestType = {'generic'} platform={{id:'ninguna',name:'ninguna'}} genre={{id:'ninguna',name:'ninguna'}} />
+					<Movies text='Top peliculas' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id: 'Ninguno',name: 'Ninguno'}} />
+					<Series text='Top series' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:'Ninguno',name:'Ninguno'}} />
 				</>
 			</Container>
 		</>

@@ -14,6 +14,7 @@ import {
     Montserrat_700Bold,
     Montserrat_800ExtraBold
 } from "@expo-google-fonts/montserrat";
+import { useStorage } from '../context/storageContext'
 
 const Container = styled.ScrollView`
 	flex: 1;
@@ -49,26 +50,24 @@ const Warning = styled.Text`
 `
 
 const WarningButton = styled.TouchableOpacity`
-    background-color: #E7442E;
+    background-color: #fff;
     padding: 10px;
     border-radius: 10px;
     margin: 10px;
 `
 
 const WarningButtonText = styled.Text`
-    color: white;
+    color: black;
     font-family: "Montserrat_300Light";
+    font-weight:800;
     font-size: 15px;
 `
 
 const WarningWrapper = styled.View`
-    flex: 1;
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-    position: absolute;
-    z-index: 50;
-    top: 40%;
+    
 `
 
 const MyList = () => {
@@ -81,14 +80,7 @@ const MyList = () => {
         Montserrat_800ExtraBold
     });
 
-
-    const [loading, setLoading] = useState(true);
-    const [movies, setMovies] = useState(null);
-
-    useEffect(() => {
-       console.log('get apy user my list movies and series')
-    }, [])
-
+    const {my_list_movies, my_list_series} = useStorage()
     const navigation = useNavigation();
 
     return fontsLoaded && (
@@ -98,32 +90,48 @@ const MyList = () => {
                 backgroundColor='transparent'
                 barStyle='light-content'
             />
-            {
-                movies?.length == 0 && (
-                    <WarningWrapper>
-                        <Warning>There are no movies in your list.</Warning>
-                        <WarningButton activeOpacity={0.5} onPress={() => navigation.navigate("Home")}><WarningButtonText>Browse Movies</WarningButtonText></WarningButton>
-                    </WarningWrapper>
-                )
-            }
             <Container>
+               
                 <Header login={true} goBack={navigation.goBack} label="Mi lista" />
+                {
+                    (my_list_movies?.length == 0 && my_list_series?.length == 0) ?(
+                        <WarningWrapper>
+                            <Warning>No hay nada en tu lista..</Warning>
+                            <WarningButton activeOpacity={0.5} onPress={() => navigation.goBack()}><WarningButtonText>Busca nuevo contenido</WarningButtonText></WarningButton>
+                        </WarningWrapper>
+                    )
+                :
+                <>
                 <MovieScroll>
-                    {movies?.map((movie, item) => {
-                        console.log(movie.banner)
+                    {my_list_movies?.map((movie, item) => {
                         return (
                             <TouchableOpacity activeOpacity={0.5} key={item} onPress={() => {
                                 navigation.navigate("ViewMovie", {
-                                    id: movie.movieID,
+                                    id: movie.id,
                                 })
                             }}>
                                 <MovieCard>
-                                    <MoviePoster resizeMode='cover' source={{ uri: movie.banner }} />
+                                    <MoviePoster resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+movie.poster_path:null }} />
                                 </MovieCard>
                             </TouchableOpacity>
                         )
                     })}
                 </MovieScroll>
+                <MovieScroll>
+                    {my_list_series?.map((movie, item) => {
+                        return (
+                            <TouchableOpacity activeOpacity={0.5} key={item} onPress={() => {
+                                navigation.navigate("ViewEpisode", {
+                                    id: movie.id,
+                                })
+                            }}>
+                                <MovieCard>
+                                    <MoviePoster resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+movie.poster_path:null }} />
+                                </MovieCard>
+                            </TouchableOpacity>
+                        )
+                    })}
+                </MovieScroll></>}
             </Container>
         </>
     )
