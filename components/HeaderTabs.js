@@ -23,6 +23,11 @@ const HeaderTabs = () => {
 
     return (
         <Container>
+              <TouchableOpacity activeOpacity={0.5}onPress={() => {
+                navigation.navigate("BottomStack")
+            }}>
+                <Tab>Home</Tab>
+            </TouchableOpacity>
             <TouchableOpacity activeOpacity={0.5}onPress={() => {
                 navigation.navigate("Series")
             }}>

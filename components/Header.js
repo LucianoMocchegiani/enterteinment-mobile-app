@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components/native'
-import { AntDesign, MaterialIcons} from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native';
+import { AntDesign, MaterialIcons, FontAwesome} from '@expo/vector-icons';
+import { TouchableOpacity, View  } from 'react-native';
 import {
 	useFonts,
 	Montserrat_200ExtraLight,
@@ -26,13 +26,8 @@ const Container2 = styled.View`
 	align-items: center;
 	flex-direction: row;
 	justify-content: space-between;
-	padding-left: 20px;
+	padding: 40px 25px 0 25px;
 	width: 100%;
-`
-
-const Logo = styled.Image`
-	width: 23px;
-	height: 45px;
 `
 
 const Logo2 = styled.Image`
@@ -93,7 +88,7 @@ const Header = ({ login, goBack, label }) => {
 								<AntDesign name="arrowleft" size={24} color="white" />
 							</TouchableOpacity>
 						) : (
-								<Logo resizeMode='contain' source={require('../assets/logo.png')} />
+								<View style={{width:36, height:36, borderRadius:36, backgroundColor:'#fff', justifyContent:'center', alignContent:'center', alignItems:'center'}}><FontAwesome style={{marginLeft:5}}name='play' size={22} color='black' /></View>
 							)
 					}
 					{
@@ -133,7 +128,7 @@ const Header = ({ login, goBack, label }) => {
 			</Container>
 		) : (
 				<Container2>
-					<Logo2 resizeMode='contain' source={require('../assets/netflixlogo2.png')} />
+					<View style={{width:36, height:36, borderRadius:36, backgroundColor:'#fff', justifyContent:'center', alignContent:'center', alignItems:'center'}}><FontAwesome style={{marginLeft:5}}name='play' size={22} color='black' /></View>
 				</Container2>
 			)
 	)

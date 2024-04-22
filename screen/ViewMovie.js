@@ -8,7 +8,6 @@ import { useRoute } from '@react-navigation/native'
 import CheckMyList from '../components/CheckMyListMovie'
 import { Video } from 'expo-av';
 import { useStorage } from '../context/storageContext'
-import { Feather } from '@expo/vector-icons'
 import {
     useFonts,
     Montserrat_200ExtraLight,
@@ -261,14 +260,6 @@ const ViewMovie = ({ navigation }) => {
                     <Subtitle>{state?.data?.release_date}</Subtitle>
                     <CheckMyList movie={state.data}/>
                 </MovieSubDetails>
-                <ActionButtons>
-                    {/* <Play 
-                        onPress={()=>algo()}
-                        activeOpacity={0.5}>
-                        <Feather name='play' size={22} color='black' />
-                        <TextButtonPlay>Play</TextButtonPlay>
-                    </Play> */}
-                </ActionButtons>
                 <MovieDescription>
                     {state?.data?.overview}
                 </MovieDescription>

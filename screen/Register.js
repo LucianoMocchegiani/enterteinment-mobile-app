@@ -1,35 +1,10 @@
 import React, { useState } from 'react'
-
-import { Dimensions, Text, KeyboardAvoidingView, ImageBackground, Alert } from 'react-native'
+import { Dimensions, Text, KeyboardAvoidingView, ImageBackground, Alert, View, ScrollView } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import styled from 'styled-components/native'
-
 import Header from '../components/Header'
 import { useAuth } from '../context/authContext';
-
-const Container = styled.ScrollView`
-	flex: 1;
-    background-color: #000;
-`
-
-
-const FormWrapper = styled.View`
-    width: 100%;
-    justifyContent: center;
-    alignItems: center;
-    height: 80%;
-`
-
-const Form = styled.View`
-height: 400px;
-    width: 90%;
-    background-color: black;
-    flex-direction: column;
-    border-radius: 20px;
-    padding: 20px;
-    justify-content: center;
-`
-
+import { useStyles } from '../context/stylesContext'
 const SubmitForm = styled.TouchableOpacity`
     width: 95%;
     height: 50px;
@@ -39,7 +14,7 @@ const SubmitForm = styled.TouchableOpacity`
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-    background-color: #E7442E;
+    background-color: #fff;
 `
 
 const Input = styled.TextInput`
@@ -57,7 +32,7 @@ const ButtonText = styled.Text`
 	font-size: 15px;
 	font-weight: bold;
     padding-left: 5px;
-    color: white;
+    color: black;
 `
 const SignInText = styled.Text`
 font-size: 30px;
@@ -80,11 +55,6 @@ margin: 15px;
 text-align: center;
 `
 
-const Overlay = styled.View`
-    background-color: 'rgba(0,0,0,0.5)';
-    flex: 1;
-`
-
 const HalfInputWrapper = styled.View`
     flex-direction:row;
     justify-content: center;
@@ -92,7 +62,7 @@ const HalfInputWrapper = styled.View`
 `
 
 const HalfInput = styled.TextInput`
-width: 45.8%;
+    width: 45.8%;
     height: 50px;
     border: none;
     padding: 10px;
@@ -113,7 +83,7 @@ const InputsWrapper = styled.View`
 `
 
 const Register = ({ navigation }) => {
-
+    const {height, width}=useStyles()
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -151,30 +121,28 @@ const Register = ({ navigation }) => {
     return (
         <>
             <StatusBar style="light" />
-            <Container>
-                <ImageBackground source={{ uri: 'https://assets.nflxext.com/ffe/siteui/vlv3/9c5457b8-9ab0-4a04-9fc1-e608d5670f1a/710d74e0-7158-408e-8d9b-23c219dee5df/IN-en-20210719-popsignuptwoweeks-perspective_alpha_website_small.jpg' }} resizeMode="cover" style={{ flex: 1, height: Dimensions.get("window").height }}>
-                    <Overlay>
+            <ScrollView style={{backgroundColor:'#000', height:height}}>
+                <ImageBackground source={{ uri: 'https://assets.nflxext.com/ffe/siteui/vlv3/9c5457b8-9ab0-4a04-9fc1-e608d5670f1a/710d74e0-7158-408e-8d9b-23c219dee5df/IN-en-20210719-popsignuptwoweeks-perspective_alpha_website_small.jpg' }} resizeMode="cover" style={{ height:height }}>
+                    <View style={{height:height}}>
                         <Header login={false} />
-                        <FormWrapper>
-                            <Form>
-                                <KeyboardAvoidingView style={{ width: '100%' }}>
-                                    <SignInText>Sign Up</SignInText>
-                                    <InputsWrapper>
-                                        <HalfInputWrapper>
-                                            <HalfInput placeholderTextColor='grey' placeholder="First Name" value={firstName} onChangeText={text => setFirstName(text)} />
-                                            <HalfInput placeholderTextColor='grey' placeholder="Last Name" value={lastName} onChangeText={text => setLastName(text)} />
-                                        </HalfInputWrapper>
-                                        <Input placeholderTextColor='grey' placeholder="Enter your email" value={email} onChangeText={(text) => setEmail(text)} />
-                                        <Input placeholderTextColor='grey' placeholder="Password" value={password} secureTextEntry onChangeText={(text) => setPassword(text)} />
-                                        <SubmitForm onPress={register} disabled={loading}><ButtonText>{loading ? 'Loading...' : "Sign Up"}</ButtonText></SubmitForm>
-                                        <NewToNetflixTextWrapper activeOpacity={0.5} onPress={() => navigation.navigate("Login")}><NewToNetflix>Already have an account ? Sign In</NewToNetflix></NewToNetflixTextWrapper>
-                                    </InputsWrapper>
-                                </KeyboardAvoidingView>
-                            </Form>
-                        </FormWrapper>
-                    </Overlay>
+                        <View style={{width:width, justifyContent:'center', alignContent:'center', alignItems:'center', height:height*0.8}}>
+                        <View style={{height:400, width:width*0.9, maxWidth:600,backgroundColor:'black',flexDirection:'column',borderRadius:20,padding:20,justifyContent:'center'}}> 
+                            <SignInText>Resgistra tu cuenta</SignInText>
+                            <InputsWrapper>
+                                <HalfInputWrapper>
+                                    <HalfInput placeholderTextColor='grey' placeholder="Nombre" value={firstName} onChangeText={text => setFirstName(text)} />
+                                    <HalfInput placeholderTextColor='grey' placeholder="Apellido" value={lastName} onChangeText={text => setLastName(text)} />
+                                </HalfInputWrapper>
+                                <Input placeholderTextColor='grey' placeholder="Ingresa tu email" value={email} onChangeText={(text) => setEmail(text)} />
+                                <Input placeholderTextColor='grey' placeholder="Contraseña" value={password} secureTextEntry onChangeText={(text) => setPassword(text)} />
+                                <SubmitForm onPress={register} disabled={loading}><ButtonText>{loading ? 'Cargando...' : "Registrar"}</ButtonText></SubmitForm>
+                                <NewToNetflixTextWrapper activeOpacity={0.5} onPress={() => navigation.navigate("Login")}><NewToNetflix>Ya tienes cuenta? Inicia sesión</NewToNetflix></NewToNetflixTextWrapper>
+                            </InputsWrapper>
+                            </View>
+                        </View>
+                    </View>
                 </ImageBackground>
-            </Container>
+            </ScrollView>
         </>
     )
 }

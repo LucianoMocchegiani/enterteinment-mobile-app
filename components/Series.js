@@ -1,12 +1,10 @@
 import React, { useEffect, useState} from 'react'
 import {getSeries} from '../firebase/endpoints/series'
-import { Dimensions, TouchableOpacity } from 'react-native'
+import { TouchableOpacity, View, FlatList, Image } from 'react-native'
 import styled from 'styled-components/native'
 import { useNavigation } from '@react-navigation/native'
-
-const Container = styled.View`
-	padding: 20px 0;
-`
+import { useStyles } from '../context/stylesContext'
+import FastImage from 'react-native-fast-image';
 
 const Label = styled.Text`
 	color: #fff;
@@ -18,25 +16,13 @@ const Label = styled.Text`
 	margin-left: 10px;
 `
 
-const MovieScroll = styled.ScrollView`
-	padding-left: 10px;
-`
-
-const MoviePoster = styled.Image`
-	width: ${Math.round((Dimensions.get('window').width * 35) / 100)}px;
-	height: ${Math.round((Dimensions.get('window').width * 55) / 100)}px;
-`
-
-const MovieCard = styled.View`
-	padding-right: 9px;
-`
-
 const Series = ({ 
 	label={id:'Ninguna',name:'Ninguna'}, 
 	requestType = 'generic', 
 	platform={id:'Ninguna',name:'Ninguna'}, 
 	genre={id:'Ninguno',name:'Ninguno'}, 
 	text='' }) => {
+	const {height, width} = useStyles()
 	const [item, setItem] = useState([]);
 	const navigation = useNavigation();
 	async function fetchData(){
@@ -50,32 +36,43 @@ const Series = ({
 			setState:setItem, 
 			prevState:[],
 		}
-		const {data, success} = await getSeries(options)
+		const {data} = await getSeries(options)
 		setItem(data)
 	}
 	useEffect(() => {
 		fetchData()
 	}, [platform]);
 	return (
-		<Container>
+		<View style={{paddingHorizontal:10}}>
 			<Label>{text}</Label>
 			{item?
-			<MovieScroll horizontal>
-				{item.map((movie, index) => {
-					return (
-						<TouchableOpacity activeOpacity={0.5} key={movie.id+index} onPress={() => {
-							navigation.navigate("ViewEpisode", {
-								id: movie.id,
-							})
-						}}>
-							<MovieCard>
-								<MoviePoster resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+movie.poster_path:null }} />
-							</MovieCard>
-						</TouchableOpacity>
-					)
-				})}
-			</MovieScroll>:null}
-		</Container>
+			<FlatList 
+				horizontal 
+				data={item}
+				keyExtractor={(movie, index)=> movie.id + index}
+				renderItem ={({ item:movie})=>(
+					<TouchableOpacity activeOpacity={0.5} onPress={() => {
+						navigation.navigate("ViewEpisode", {
+							id: movie.id,
+						})
+					}}>
+						<View style={{paddingHorizontal:5}}>
+						<Image
+							style={{
+								width: width * 0.35,
+								height: width * 0.55,
+								maxWidth: 200,
+								maxHeight: 350,
+							}}
+							source={{
+								uri: movie?.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : null,
+							}}
+						/>
+						</View>
+					</TouchableOpacity>
+				)}
+			/>:null}
+		</View>
 	)
 }
 

@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, Dimensions, ScrollView, Alert } from 'react-native'
+import React, { useState } from 'react'
+import { View, Text, Alert, Image } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../context/authContext';
-import styled from 'styled-components/native'
 import { StatusBar } from 'expo-status-bar'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import {
@@ -19,33 +18,22 @@ import { useStorage } from '../context/storageContext';
 import Loading from './Loading';
 import AddProfile from '../components/AddProflie'
 import { postProfile } from '../firebase/endpoints/profiles';
+import { useStyles } from '../context/stylesContext';
 
-const {height, width} = Dimensions.get('window')
-
-const Avatar = styled.Image`
-width: 100px;
-height: 70px;
-border-radius: 20px;
-`
-
-const ProfilesContainer  = styled.ScrollView`
-padding-top:30px;
-width:100%;
-height: 100%;
-`
 const CardProfile =({profile, onPress})=>{
     return(
         <View style={{flexDirection:'column',justifyContent:'center',alignContent:'center', alignItems:'center'}}>
             <TouchableOpacity 
                 activeOpacity={0.5} 
                 onPress={()=>onPress(profile.id)}>
-            <Avatar resizeMode='contain' source={{ uri: 'https://occ-0-4857-2164.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABTYctxxbe-UkKEdlMxXm4FVGD6DqTHkQ0TQ5CQJ9jbOMnG0CYxYcSICcTUQz8DrB7CpKUGpqJVMtEqksLlvSJx2ac3Ak.png?r=a41' }} />
+            <Image style={{width:100, height:70, borderRadius:20}} resizeMode='contain' source={{ uri: 'https://occ-0-4857-2164.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABTYctxxbe-UkKEdlMxXm4FVGD6DqTHkQ0TQ5CQJ9jbOMnG0CYxYcSICcTUQz8DrB7CpKUGpqJVMtEqksLlvSJx2ac3Ak.png?r=a41' }} />
             </TouchableOpacity>
             <Text style={{color:'white'}}>{profile.name}</Text>
         </View>
     )
 }
 const Profiles = ({navigation}) => {
+    const  {height, width} = useStyles()
     const { logout }=useAuth()
     const { handleSetProfile, profiles, handleSetUser } = useStorage ()
     const [loading, setLoading] = useState(false)
@@ -119,14 +107,14 @@ const Profiles = ({navigation}) => {
             />
             <Loading visible={loading}/>
             <AddProfile visible={addModal} submit={addProfile}/>
-            <ScrollView style = {{flex:1, backgroundColor: '#000'}} contentContainerStyle= {{justifyContent:'center', alignContent:'center', alignItems:'center'}}>
-                <View style={{flexDirection:'row',marginTop:height*0.4 }}>
+            <View style = {{flex:1, backgroundColor: '#000',  height:'auto', justifyContent:'center', alignItems:'center'}}>
+                <View style={{flexDirection:'row'}}>
                     {profiles.map((profile, index)=>{
                         return(
                            <CardProfile
                                 key = {index}
                                 profile = {profile}
-                                onPress ={selectProfile}
+                                onPress = {selectProfile}
                            />
                         )
                     }
@@ -137,7 +125,7 @@ const Profiles = ({navigation}) => {
                     </TouchableOpacity>
                     : null}
                 </View>
-                <View style={{flexDirection:'col', justifyContent:'center', alignItems:'center' , alignContent:'center', marginTop:80 }}>
+                <View style={{flexDirection:'col', justifyContent:'center', alignItems:'center' , alignContent:'center', marginTop:height*0.1}}>
                     <Text style={{color:'white', fontSize:20, marginBottom:20}}>Cerrar sesion</Text>
                     <TouchableOpacity activeOpacity={0.5} 
                         onPress={()=>handleLogout()}
@@ -147,7 +135,7 @@ const Profiles = ({navigation}) => {
                         </View>
                     </TouchableOpacity>
                 </View>
-            </ScrollView>
+            </View>
         </>
     )
 }

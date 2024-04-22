@@ -1,6 +1,5 @@
 import React from 'react'
-import { StatusBar, Dimensions } from 'react-native'
-import {ActivityIndicator, StyleSheet, View, Modal, SafeAreaView} from 'react-native';
+import {ActivityIndicator, StyleSheet, View, Modal} from 'react-native';
 
 const Loading = ({visible=true}) => {
 

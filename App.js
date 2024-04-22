@@ -1,12 +1,11 @@
 import React from 'react'
 import {AuthProvider } from './context/authContext'
 import { StorageProvider } from './context/storageContext'
+import { StylesProvider } from './context/stylesContext'
 import Home from './screen/Home'
 import Login from './screen/Login'
 import { NavigationContainer } from '@react-navigation/native'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import Register from './screen/Register';
 import Splash from './screen/Splash';
 import { KeyboardAvoidingView, Platform } from 'react-native';
@@ -24,48 +23,8 @@ import { LogBox } from 'react-native';
 // LogBox.ignoreAllLogs();
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
 
 const Navigation = () => {
-  function BottomStackScreen() {
-    return (
-      <Tab.Navigator 
-        screenOptions={{
-          tabBarActiveTintColor: 'white',
-          tabBarInactiveTintColor: '#5B5B5B',
-          tabBarLabelStyle: {
-            fontSize: 14,
-          },
-          tabBarItemStyle: {
-            flexDirection: 'row',
-          },
-          tabBarStyle: {
-            backgroundColor: '#141414',
-            borderTopWidth: 0,
-            elevation: 0, // for Android
-            shadowOffset: {
-              width: 0,
-              height: 0, // for iOS
-            },
-            height: 60,
-            paddingBottom: 10,
-          },
-          headerShown:false,
-        }}  
-      >
-        <Tab.Screen name="Home" component={Home} options={{
-          tabBarIcon: ({ color }) => <AntDesign name="home" size={24} color={color} style={{ marginBottom: 10 }} />
-        }} />
-        <Tab.Screen name="Movies" component={Movies} options={{
-          tabBarIcon: ({ color }) => <MaterialIcons name="video-library" size={24} color={color} style={{ marginBottom: 10 }} />
-        }} />
-         <Tab.Screen name="Series" component={Series} options={{
-          tabBarIcon: ({ color }) => <MaterialIcons name="video-library" size={24} color={color} style={{ marginBottom: 10 }} />
-        }} />
-      </Tab.Navigator>
-    );
-  }
-
   const screenOptions = {
     headerShown: false,
     ...TransitionPresets.SlideFromRightIOS,
@@ -75,6 +34,7 @@ const Navigation = () => {
     <NavigationContainer>
       <AuthProvider>
       <StorageProvider>
+      <StylesProvider>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1, }} keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}>
         <Stack.Navigator initialRouteName="Splash" screenOptions={screenOptions}>
           <Stack.Screen name="Login" component={Login} options={{
@@ -100,6 +60,7 @@ const Navigation = () => {
           <Stack.Screen name="Splash" component={Splash} />
         </Stack.Navigator>
       </KeyboardAvoidingView>
+      </StylesProvider>
       </StorageProvider>
       </AuthProvider>
     </NavigationContainer>

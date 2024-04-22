@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Dimensions } from 'react-native'
+import { View, Text, Image, ScrollView, Dimensions } from 'react-native'
 import styled from 'styled-components/native'
 import Header from '../components/Header'
 import { StatusBar } from 'expo-status-bar'
@@ -15,32 +15,7 @@ import {
     Montserrat_800ExtraBold
 } from "@expo-google-fonts/montserrat";
 import { useStorage } from '../context/storageContext'
-
-const Container = styled.ScrollView`
-	flex: 1;
-	background-color: #000;
-    min-height: ${(Dimensions.get('window').height)}px;
-	height: auto;
-`
-
-const MovieScroll = styled.View`
-    padding-left: 10px;
-    margin: 30px;
-    margin-left: 10px;
-    flex-wrap: wrap;
-    flex-direction: row;
-    width: 100%;
-`
-
-const MoviePoster = styled.Image`
-	width: ${Math.round((Dimensions.get('window').width * 30) / 100)}px;
-    height: 200px;
-    border-radius: 10px;
-`
-
-const MovieCard = styled.View`
-	padding-right: 9px;
-`
+import { useStyles } from '../context/stylesContext'
 
 const Warning = styled.Text`
     color: #fff;
@@ -79,7 +54,7 @@ const MyList = () => {
         Montserrat_700Bold,
         Montserrat_800ExtraBold
     });
-
+    const {height, width} = useStyles()
     const {my_list_movies, my_list_series} = useStorage()
     const navigation = useNavigation();
 
@@ -90,7 +65,7 @@ const MyList = () => {
                 backgroundColor='transparent'
                 barStyle='light-content'
             />
-            <Container>
+            <ScrollView style={{flex:1 , backgroundColor:'#000'}} >
                
                 <Header login={true} goBack={navigation.goBack} label="Mi lista" />
                 {
@@ -102,7 +77,7 @@ const MyList = () => {
                     )
                 :
                 <>
-                <MovieScroll>
+                <View style={{flexWrap:'wrap', width:width, margin:20}}>
                     {my_list_movies?.map((movie, item) => {
                         return (
                             <TouchableOpacity activeOpacity={0.5} key={item} onPress={() => {
@@ -110,29 +85,29 @@ const MyList = () => {
                                     id: movie.id,
                                 })
                             }}>
-                                <MovieCard>
-                                    <MoviePoster resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+movie.poster_path:null }} />
-                                </MovieCard>
+                                <View style={{paddingHorizontal:5}}>
+                                    <Image style={{width:width*0.3, height:width*0.45, maxWidth:200, maxHeight:350, borderRadius:10}} resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+movie.poster_path:null }} />
+                                </View >
                             </TouchableOpacity>
                         )
                     })}
-                </MovieScroll>
-                <MovieScroll>
+                </View>
+                <View style={{flexWrap:'wrap', width:width, margin:20, flexDirection:'row'}}>
                     {my_list_series?.map((movie, item) => {
-                        return (
+                         return (
                             <TouchableOpacity activeOpacity={0.5} key={item} onPress={() => {
-                                navigation.navigate("ViewEpisode", {
+                                navigation.navigate("ViewMovie", {
                                     id: movie.id,
                                 })
                             }}>
-                                <MovieCard>
-                                    <MoviePoster resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+movie.poster_path:null }} />
-                                </MovieCard>
+                                <View style={{paddingHorizontal:5}}>
+                                    <Image style={{width:width*0.3, height:width*0.45, maxWidth:200, maxHeight:350, borderRadius:10}} resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+movie.poster_path:null }} />
+                                </View >
                             </TouchableOpacity>
                         )
                     })}
-                </MovieScroll></>}
-            </Container>
+                </View></>}
+            </ScrollView>
         </>
     )
 }

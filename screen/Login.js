@@ -1,33 +1,12 @@
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { Dimensions, Text, KeyboardAvoidingView, Platform, ImageBackground, Alert } from 'react-native'
+import { ImageBackground, Alert, View, ScrollView } from 'react-native'
 import styled from 'styled-components/native'
 import Header from '../components/Header'
 import { useAuth } from '../context/authContext';
 import { useStorage } from '../context/storageContext';
+import { useStyles } from '../context/stylesContext';
 
-const Container = styled.ScrollView`
-	flex: 1;
-    background-color: #000;
-`
-
-
-const FormWrapper = styled.View`
-    width: 100%;
-    justifyContent: center;
-    alignItems: center;
-    height: 80%;
-`
-
-const Form = styled.View`
-height: 400px;
-    width: 90%;
-    background-color: black;
-    flex-direction: column;
-    border-radius: 20px;
-    padding: 20px;
-    justify-content: center;
-`
 
 const SubmitForm = styled.TouchableOpacity`
     width: 95%;
@@ -38,7 +17,7 @@ const SubmitForm = styled.TouchableOpacity`
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-    background-color: #E7442E;
+    background-color: #fff;
 `
 
 const Input = styled.TextInput`
@@ -56,7 +35,7 @@ const ButtonText = styled.Text`
 	font-size: 15px;
 	font-weight: bold;
     padding-left: 5px;
-    color: white;
+    color: black;
 `
 const SignInText = styled.Text`
 font-size: 30px;
@@ -79,16 +58,11 @@ margin: 15px;
 text-align: center;
 `
 
-const Overlay = styled.View`
-    background-color: 'rgba(0,0,0,0.5)';
-    flex: 1;
-`
-
 const Login = ({ navigation }) => {
     const [loading, setLoading] = useState(false)
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
+    const { height, width } = useStyles()
     const { login, } = useAuth()
     const { handleSetUser } = useStorage()
 
@@ -120,22 +94,22 @@ const Login = ({ navigation }) => {
     return (
         <>
             <StatusBar style="light" />
-            <Container>
-                <ImageBackground source={{ uri: 'https://assets.nflxext.com/ffe/siteui/vlv3/9c5457b8-9ab0-4a04-9fc1-e608d5670f1a/710d74e0-7158-408e-8d9b-23c219dee5df/IN-en-20210719-popsignuptwoweeks-perspective_alpha_website_small.jpg' }} resizeMode="cover" style={{ flex: 1, height: Dimensions.get("window").height }}>
-                    <Overlay>
+            <ScrollView style={{backgroundColor:'#000', height:height}}>
+                <ImageBackground source={{ uri: 'https://assets.nflxext.com/ffe/siteui/vlv3/9c5457b8-9ab0-4a04-9fc1-e608d5670f1a/710d74e0-7158-408e-8d9b-23c219dee5df/IN-en-20210719-popsignuptwoweeks-perspective_alpha_website_small.jpg' }} resizeMode="cover" style={{height:height}}>
+                    <View style={{height:height}}>
                         <Header login={false} />
-                        <FormWrapper>
-                            <Form>
-                                <SignInText>Sign In</SignInText>
-                                <Input placeholder="Enter your email" placeholderTextColor='grey' value={email} onChangeText={(text) => setEmail(text)} />
-                                <Input placeholder="Password" placeholderTextColor='grey' secureTextEntry value={password} onChangeText={(text) => setPassword(text)} />
-                                <SubmitForm onPress={handleLogin} disabled={loading}><ButtonText>{loading ? "Loading..." : "Sign In"}</ButtonText></SubmitForm>
-                                <NewToNetflixTextWrapper activeOpacity={0.5} onPress={() => navigation.navigate("Register")}><NewToNetflix>New to Netflix ? Sign Up</NewToNetflix></NewToNetflixTextWrapper>
-                            </Form>
-                        </FormWrapper>
-                    </Overlay>
+                        <View style={{width:width, justifyContent:'center', alignContent:'center', alignItems:'center', height:height*0.8}}>
+                            <View style={{height:400, width:width*0.9, maxWidth:600,backgroundColor:'black',flexDirection:'column',borderRadius:20,padding:20,justifyContent:'center'}}>
+                                <SignInText>Iniciar sesión</SignInText>
+                                <Input placeholder="Ingrese su email" placeholderTextColor='grey' value={email} onChangeText={(text) => setEmail(text)} />
+                                <Input placeholder="Contraseña" placeholderTextColor='grey' secureTextEntry value={password} onChangeText={(text) => setPassword(text)} />
+                                <SubmitForm onPress={handleLogin} disabled={loading}><ButtonText>{loading ? "Cargando..." : "Entrar"}</ButtonText></SubmitForm>
+                                <NewToNetflixTextWrapper activeOpacity={0.5} onPress={() => navigation.navigate("Register")}><NewToNetflix>No tienes cuenta? Crea tu cuenta</NewToNetflix></NewToNetflixTextWrapper>
+                            </View>
+                        </View>
+                    </View>
                 </ImageBackground>
-            </Container>
+            </ScrollView>
         </>
     )
 }

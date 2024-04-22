@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import { StatusBar, Dimensions, Text, ImageBackground, ScrollView, TouchableOpacity  } from 'react-native'
+import { StatusBar, Dimensions, Text, ImageBackground, ScrollView, TouchableOpacity} from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import styled from 'styled-components/native'
 import Header from '../components/Header'

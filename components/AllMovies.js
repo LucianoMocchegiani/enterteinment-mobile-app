@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { View, Dimensions } from 'react-native'
+import { View, Image, ScrollView } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import styled from 'styled-components/native'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
     useFonts,
@@ -14,31 +13,10 @@ import {
     Montserrat_800ExtraBold
 } from "@expo-google-fonts/montserrat";
 import { getMovies } from '../firebase/endpoints/movies';
-const Container = styled.ScrollView`
-	flex: 1;
-    background-color: #000;
-    min-height: ${(Dimensions.get('window').height)}px;
-	height: auto;
-`
-
-const MoviePoster = styled.Image`
-	width: ${Math.round((Dimensions.get('window').width * 28.5) / 100)}px;
-	height: ${Math.round((Dimensions.get('window').width * 40.5) / 100)}px;
-`
-
-const MovieCard = styled.View`
-	padding-right: 9px;
-`
-
-const ResultsWrapper = styled.View`
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 10px;
-    justify-content: center;
-    heigth:auto;
-`
+import { useStyles } from '../context/stylesContext'
 
 const AllMovies = ({selectGenre, selectPlatform, selectLabel}) => {
+    const { width, height }= useStyles()
     const navigation = useNavigation();
     let [fontsLoaded] = useFonts({
         Montserrat_200ExtraLight,
@@ -70,11 +48,11 @@ const AllMovies = ({selectGenre, selectPlatform, selectLabel}) => {
 
     return fontsLoaded && (
         <>
-            <Container>
+            <ScrollView style={{flex:1 , backgroundColor:'#000'}} >
                 {
                     movies && (
                         <>
-                            <ResultsWrapper>
+                            <View style={{flexWrap:'wrap', flexDirection:'row', padding:10, height:'auto', justifyContent:'center', width:width}}>
                             {/* <FlatList
                                 onScrollEndDrag={() => onScrollFunction()}
                                 style={styles.container}
@@ -106,17 +84,17 @@ const AllMovies = ({selectGenre, selectPlatform, selectLabel}) => {
                                                 id: movie.id,
                                             })
                                         }}>
-                                            <MovieCard>
-                                                <MoviePoster resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+ movie?.poster_path:null }} />
-                                            </MovieCard>
+                                            <View style={{paddingHorizontal:5}}>
+                                                <Image style={{width:width*0.28, height:width*0.4, maxHeight:350, maxWidth:200}} resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+ movie?.poster_path:null }} />
+                                            </View>
                                         </TouchableOpacity>
                                     )
                                 })}
-                            </ResultsWrapper>
+                            </View>
                         </>
                     )
                 }
-            </Container>
+            </ScrollView>
         </>
     )
 }

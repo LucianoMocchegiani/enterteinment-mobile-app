@@ -1,10 +1,8 @@
 import React, {useState} from 'react'
-import { StatusBar, Dimensions } from 'react-native'
-import {ActivityIndicator, StyleSheet, View, Modal,Alert } from 'react-native';
+import {StyleSheet, Modal, Alert, ScrollView, View, StatusBar} from 'react-native';
 import styled from 'styled-components/native'
-import { useAuth } from '../context/authContext';
 import { useStorage } from '../context/storageContext';
-
+import { useStyles } from '../context/stylesContext';
 const FormWrapper = styled.View`
     width: 100%;
     justifyContent: center;
@@ -31,7 +29,7 @@ const SubmitForm = styled.TouchableOpacity`
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-    background-color: #E7442E;
+    background-color: #fff;
 `
 
 const Input = styled.TextInput`
@@ -49,7 +47,7 @@ const ButtonText = styled.Text`
 	font-size: 15px;
 	font-weight: bold;
     padding-left: 5px;
-    color: white;
+    color: black;
 `
 
 const Overlay = styled.View`
@@ -68,6 +66,7 @@ text-align: left;
 const Add = ({visible=true, submit=()=>{}}) => {
     const [name, setName] = useState('');
     const {userStorage} = useStorage()
+    const  {height, width} = useStyles()
     const handleSubmit = (data)=>{
         if(name){
             submit(data)
@@ -79,15 +78,16 @@ const Add = ({visible=true, submit=()=>{}}) => {
     return (
         <>
             <Modal visible={visible} animationType="slide">
-                <Overlay>                        
-                    <FormWrapper>
-                        <Form>
+                <StatusBar style="light" />
+                <ScrollView style={{backgroundColor:'#000', height:height}}>                       
+                <View style={{width:width, justifyContent:'center', alignContent:'center', alignItems:'center', height:height*0.8}}>
+                <View style={{height:400, width:width*0.9, maxWidth:600,backgroundColor:'black',flexDirection:'column',borderRadius:20,padding:20,justifyContent:'center'}}>
                             <AddText >Crear perfil</AddText >
                             <Input placeholder="Ingrese un nombre" placeholderTextColor='grey' value={name} onChangeText={(text) => setName(text)} />
                             <SubmitForm onPress={()=>handleSubmit({name:name, userStorage:userStorage})} ><ButtonText>Agregar perfil</ButtonText></SubmitForm>
-                        </Form>
-                    </FormWrapper>
-                </Overlay>
+                        </View>
+                    </View>
+                </ScrollView>
             </Modal>
         </>
     )

@@ -233,8 +233,6 @@ export function StorageProvider({children}){
     }
 
     const setKeepWatchingMovies= async (movie)=>{
-        console.log('linea 236')
-        console.log(movie)
         try{
             if(!movie){return}
             const filterMovie = keep_watching_movies.length?[...keep_watching_movies.filter(e => e?.id === movie?.id)]:[]

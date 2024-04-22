@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Dimensions, FlatList, StyleSheet, TouchableOpacity, View, Text, Modal, SafeAreaView} from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View, Text, Modal, SafeAreaView} from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-const {width, height} = Dimensions.get('window');
+import { useStyles } from "../context/stylesContext";
+
 
 const Touchable = (text,selected,onPress,objValue)=>{
     const TouchableComponent = ()=>{
@@ -76,6 +77,7 @@ function Select (
 }
 
 export default function ModalSelect({ text='Seleccionar', text2='', objValue='name', objkey='id', arraySelects, selectFunction, selected}){
+  const {height}=useStyles()
     return(
         <>
             <View style={styles.button}>
@@ -102,8 +104,8 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       width:'95%',
-      height:'32px',
-      backgroundColor:'fff',
+      height:'20px',
+      backgroundColor:'#fff',
       overflow:'hidden'
     },
 
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
     },
 
     titulo:{
-      marginLeft:width*0.05,
+      marginLeft:'5%',
       fontSize:18,
       fontWeight: "bold",
       color:"#212121",
@@ -142,7 +144,7 @@ const styles = StyleSheet.create({
     },
 
     selctedContainer:{
-      width:width,
+      width:'100%',
       flexDirection:'row',
       alignItens: 'center',
       justifyContent: 'center',
@@ -155,7 +157,7 @@ const styles = StyleSheet.create({
     },
 
     container: {
-      width:width*0.9,
+      width:'90%',
       backgroundColor:'white',
       flexDirection:"row",
       alignItems:"center",
@@ -170,16 +172,15 @@ const styles = StyleSheet.create({
     },
 
     button:{
-      width:width*0.95,
+      maxWidth:600,
+      width:'95%',
       height:'32px',
       backgroundColor:"#fff",
       borderColor:"#5c7ae3",
       borderRadius:2,
-      paddingHorizontal:10,
       justifyContent:'center',
       alignItems:'center',
       flexDirection:'row',
-      marginBottom:10,
     },
 
     text:{

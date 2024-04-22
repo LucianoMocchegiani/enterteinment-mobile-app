@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Suspense } from 'react'
 import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import SelectComponent from './SelectForGenres'
+import { useStyles } from '../context/stylesContext'
 
 const movies = {
     data:[
@@ -85,6 +86,7 @@ const movies = {
     message: 'genres movies',
 }
 const AwaitingGenres = ({selectGenre, setSelectGenre}) =>{
+    const { heigth, width } = useStyles()
     const handleSelectGenre = (genre)=>{
         setSelectGenre(
             genre
@@ -92,14 +94,16 @@ const AwaitingGenres = ({selectGenre, setSelectGenre}) =>{
     }
 
     return(
-        <SelectComponent
-            text={'Generos'}
-            objValue='name'
-            objkey='id'
-            arraySelects={[...movies.data,{ id:'Ninguno', name:'Ninguno'}]}
-            selectFunction={handleSelectGenre}
-            selected={selectGenre?selectGenre:''}
-        />
+        <View style={{width:width, alignItems:'center', marginTop:30}}>
+            <SelectComponent
+                text={'Generos'}
+                objValue='name'
+                objkey='id'
+                arraySelects={[...movies.data,{ id:'Ninguno', name:'Ninguno'}]}
+                selectFunction={handleSelectGenre}
+                selected={selectGenre?selectGenre:''}
+            />
+        </View>
     )
 }
 

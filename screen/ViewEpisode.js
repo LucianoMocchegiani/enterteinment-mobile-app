@@ -6,7 +6,7 @@ import { getSeasonDetail } from '../firebase/endpoints/seasons'
 import styled from 'styled-components/native'
 import { StatusBar } from 'expo-status-bar'
 import Header from '../components/Header'
-import { Video, getStatusAsync, setStatusAsync, pauseAsync, playAsync, } from 'expo-av';
+import { Video } from 'expo-av';
 import { useRoute } from '@react-navigation/native'
 import SelectComponent from '../components/Select'
 import {
@@ -291,12 +291,12 @@ const ViewEpisode = ({ navigation }) => {
                     <CheckMyList serie={state.data}/>
                 </MovieSubDetails>
                 <ActionButtons>
-                    <Play 
+                    {/* <Play 
                         onPress={playAsync()}
                         activeOpacity={0.5}>
                         <Feather name='play' size={22} color='black' />
                         <TextButtonPlay>Play</TextButtonPlay>
-                    </Play>
+                    </Play> */}
                     <Season serie_id={params?.id} array={state?.data?.seasons} setSelect={setSelect} select={select} season={season} setSeason={setSeason}/>
                     <Episode serie_id={params?.id} array={season?.data?.episodes} setSelect={setSelect} select={select} episode={episode} setEpisode={setEpisode}/>
                 </ActionButtons>
@@ -325,35 +325,6 @@ const ViewEpisode = ({ navigation }) => {
                         })
                     }
                 </Tags>
-                
-                <ActionButtons2>
-                    {/* {
-                        movie && user?.list.includes(movie.id) ? (
-                            <ActionButton activeOpacity={0.5} onPress={() => {
-                                console.log('funcion api my list delete')
-                            }}>
-                                <Feather name="check" size={35} color="white" />
-                                <ActionButtonLabel>My List</ActionButtonLabel>
-                            </ActionButton>
-                        ) : (
-                                <ActionButton activeOpacity={0.5} onPress={() => {
-                                  console.log('funcion api add my list')
-
-                                }}>
-                                    <Ionicons name="add-outline" size={35} color="white" />
-                                    <ActionButtonLabel>My List</ActionButtonLabel>
-                                </ActionButton>
-                            )
-                    } */}
-                    {/* <ActionButton activeOpacity={0.5}>
-                        <AntDesign name="like2" size={30} color="white" style={{ marginBottom: 7 }} />
-                        <ActionButtonLabel>Rate</ActionButtonLabel>
-                    </ActionButton> */}
-                    {/* <ActionButton activeOpacity={0.5}>
-                        <AntDesign name="sharealt" size={27} color="white" style={{ marginBottom: 7 }} />
-                        <ActionButtonLabel>Share</ActionButtonLabel>
-                    </ActionButton> */}
-                </ActionButtons2>
             </Container>
         </>
     ) : (
