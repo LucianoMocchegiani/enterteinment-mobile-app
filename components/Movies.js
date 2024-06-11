@@ -1,9 +1,10 @@
 import React, { useEffect, useState} from 'react'
 import {getMovies} from '../firebase/endpoints/movies'
-import { TouchableOpacity, View, ScrollView, Image, FlatList} from 'react-native'
+import { TouchableOpacity, View, Image, FlatList} from 'react-native'
 import styled from 'styled-components/native'
 import { useNavigation } from '@react-navigation/native'
 import { useStyles } from '../context/stylesContext'
+import Loading from './LoadingPoster'
 
 const Label = styled.Text`
 	color: #fff;
@@ -44,7 +45,7 @@ const Movies = ({
 	return (
 		<View style={{paddingHorizontal:10}}>
 			<Label>{text}</Label>
-			{item?
+			{item?.length?
 			<FlatList 
 				horizontal 
 				data={item}
@@ -70,7 +71,7 @@ const Movies = ({
 						</View>
 					</TouchableOpacity>
 				)}
-			/>:null}
+			/>:<Loading/>}
 		</View>
 	)
 }

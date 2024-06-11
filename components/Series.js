@@ -4,7 +4,7 @@ import { TouchableOpacity, View, FlatList, Image } from 'react-native'
 import styled from 'styled-components/native'
 import { useNavigation } from '@react-navigation/native'
 import { useStyles } from '../context/stylesContext'
-import FastImage from 'react-native-fast-image';
+import Loading from './LoadingPoster'
 
 const Label = styled.Text`
 	color: #fff;
@@ -45,7 +45,7 @@ const Series = ({
 	return (
 		<View style={{paddingHorizontal:10}}>
 			<Label>{text}</Label>
-			{item?
+			{item?.length?
 			<FlatList 
 				horizontal 
 				data={item}
@@ -71,7 +71,7 @@ const Series = ({
 						</View>
 					</TouchableOpacity>
 				)}
-			/>:null}
+			/>:<Loading/>}
 		</View>
 	)
 }

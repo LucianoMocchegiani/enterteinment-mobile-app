@@ -8,28 +8,28 @@ const Splash = ({navigation}) => {
 
     const {user} = useAuth()
     const { handleSetUser } = useStorage()
-    
-    const chargeUserStorage = async ()=>{
-        if(user){
-            const response =  await handleSetUser()
-            if(response.success){
-                return navigation.replace("Profiles");
-            }else{
-                return Alert.alert('Fallo de conexion','Verifique su conexion de internet y reinicie la app.')
+
+    const checkUserStatus = async () => {
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        if (user) {
+            try {
+                const response = await handleSetUser();
+                if (response.success) {
+                    navigation.replace("Profiles");
+                } else {
+                    Alert.alert('Fallo de conexion', 'Verifique su conexion de internet y reinicie la app.');
+                }
+            } catch (error) {
+                Alert.alert('Error', 'Ocurrió un error al cargar los datos del usuario.');
             }
+        } else {
+            navigation.replace("Login");
         }
-    } 
-    const redirectLogin = ()=>{
-        if(!user){
-            return navigation.replace("Login");
-        }
-    }
+    };
 
-    useEffect(()=>{
-        chargeUserStorage()
-        redirectLogin ()
-    },[user])
-
+    useEffect(() => {
+        checkUserStatus();
+    }, [user]);
     return (
         <>
             <StatusBar
@@ -41,8 +41,7 @@ const Splash = ({navigation}) => {
                 <ActivityIndicator size={150} color={'black'}/>
             </View>
         </>
-    )
-}
+    ) }
 
 export default Splash
 const styles = StyleSheet.create({

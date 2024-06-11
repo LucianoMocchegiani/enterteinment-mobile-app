@@ -26,9 +26,7 @@ const Home = () => {
 				barStyle='light-content'
 			/>
 			<ScrollView style={{flex:1 , backgroundColor:'#000'}} >
-				<Suspense fallback={<Text>cargando...</Text>}>
-					<FrontPage type='home'/>	
-				</Suspense>
+				<FrontPage type='home'/>	
 				<>
 					<Series text='Top series' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:'Ninguno',name:'Ninguno'}} />
 					<Movies text='Top peliculas' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id: 'Ninguno',name: 'Ninguno'}} />

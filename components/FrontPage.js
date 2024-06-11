@@ -8,6 +8,7 @@ import HeaderTabs from '../components/HeaderTabs';
 import { getHomeFrontPage, getMoviesFrontPage, getSeriesFrontPage} from '../firebase/endpoints/frontPage'
 import { useNavigation } from '@react-navigation/native'
 import { useStyles } from '../context/stylesContext'
+import Loading from './LoadingFrontPage'
 
 const Gradient = styled(LinearGradient)`
 	height: 101%;
@@ -42,20 +43,24 @@ const FrontPage = ({type='home'})=>{
 	}
 	handleGetFrontPage()
     return(
-        <ImageBackground resizeMode='contain' style={{height:height*0.9, width:width}} source={{ uri: frontPage?.poster_path?"https://image.tmdb.org/t/p/w500"+frontPage.poster_path:null  }}>
-            <Gradient
-                locations={[0.1, 0.2, 0.5, 0.94]}
-                colors={[
-                    'rgba(0,0,0,0.5)',
-                    'rgba(0,0,0,0.0)',
-                    'rgba(0,0,0,0.0)',
-                    'rgba(0,0,0,1)'
-                ]}>
-            <Header login={true} navigation={navigation} />
-            <HeaderTabs />
-            <Hero movie={frontPage} type={type}/>
-            </Gradient>
-        </ImageBackground>
+        <>
+            <ImageBackground resizeMode='contain' style={{height:height*0.9, width:width}} source={{ uri: frontPage?.poster_path?"https://image.tmdb.org/t/p/w500"+frontPage.poster_path:null  }}>
+                <Gradient
+                    locations={[0.1, 0.2, 0.5, 0.94]}
+                    colors={[
+                        'rgba(0,0,0,0.5)',
+                        'rgba(0,0,0,0.0)',
+                        'rgba(0,0,0,0.0)',
+                        'rgba(0,0,0,1)'
+                    ]}>
+                <Header login={true} navigation={navigation} />
+                <HeaderTabs />
+                {frontPage?
+                <Hero movie={frontPage} type={type}/>:
+                <Loading/>}
+                </Gradient>
+            </ImageBackground>
+        </>
     )
 }
 export default FrontPage

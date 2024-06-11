@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { Dimensions, FlatList, StyleSheet, TouchableOpacity, View, Text, Modal, SafeAreaView} from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View, Text, Modal, SafeAreaView} from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-const {width, height} = Dimensions.get('window');
 
-const Touchable = (text,selected,onPress,objValue,objKey)=>{
+const Touchable = ( text, selected, onPress, objValue, objKey, icon, small)=>{
     const TouchableComponent = ()=>{
       return (
         <TouchableOpacity 
           onPress={onPress}
-          style={styles.selectTouch}>
-          <Text style={{...styles.text,width:'40%' }}>{text}</Text>
-          <Icon name="chevron-right" color="#555" size={26}/>
-          <Text style={{...styles.text,width:'50%'}}>{selected[objKey] +'-  '+ selected[objValue]}</Text>
+          style={small?styles.selectTouchSmall:styles.selectTouch}>
+          {small? <Icon name={icon} color="#555" size={26}/>:
+          <>
+            <Text style={{...styles.text,width:'40%' }}>{text}</Text>
+            <Icon name={icon} color="#555" size={26}/>
+            <Icon name="chevron-right" color="#555" size={26}/>
+            <Text style={{...styles.text,width:'50%'}}>{selected[objKey] +'-  '+ selected[objValue]}</Text>
+          </>}
         </TouchableOpacity>
       )
     }
@@ -37,11 +40,13 @@ function Select (
       objKey ='id',
       objValue="name",
       selectFunction,
-      selected
+      selected,
+      icon,
+      small
     }
   ){
     const [visible,setVisible] = useState(false)
-    const {TouchableComponent}=touchableComponent(touchableText,selected,()=> setVisible(true),objValue,objKey);
+    const {TouchableComponent}=touchableComponent(touchableText,selected,()=> setVisible(true),objValue,objKey,icon, small);
     function renderOption(item){
       const {OptionComponent}=optionComponent(item,objValue,selected,()=>toggleSelect(item),objKey)
       return <OptionComponent key={item.id}/>
@@ -75,10 +80,10 @@ function Select (
     )
 }
 
-export default function ModalSelect({ text='Seleccionar', text2='', objValue='name', objkey='id', arraySelects, selectFunction, selected}){
+export default function ModalSelect({ text='Seleccionar', text2='', objValue='name', objkey='id', arraySelects, selectFunction, selected, icon=null, small=null}){
     return(
         <>
-            <View style={styles.button}>
+            <View style={small?styles.buttonSmall:styles.button}>
                 <Select 
                   touchableText = {text2}
                   title="Selecciona una opcion" 
@@ -88,6 +93,8 @@ export default function ModalSelect({ text='Seleccionar', text2='', objValue='na
                   selectFunction={selectFunction}
                   touchableText={text}
                   selected={selected}
+                  icon={icon}
+                  small={small}
                 />
             </View>
         </>
@@ -104,6 +111,16 @@ const styles = StyleSheet.create({
       width:'95%',
       height:'32px',
       backgroundColor:'fff',
+      overflow:'hidden'
+    },
+    selectTouchSmall:{
+      flexDirection:'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: 'auto',
+      width: 'auto',
+      backgroundColor:'#fff',
+      borderRadius:5,
       overflow:'hidden'
     },
 
@@ -134,7 +151,7 @@ const styles = StyleSheet.create({
     },
 
     titulo:{
-      marginLeft:width*0.05,
+      marginLeft:'5%',
       fontSize:18,
       fontWeight: "bold",
       color:"#212121",
@@ -142,7 +159,7 @@ const styles = StyleSheet.create({
     },
 
     selctedContainer:{
-      width:width,
+      width:'100%',
       flexDirection:'row',
       alignItens: 'center',
       justifyContent: 'center',
@@ -155,7 +172,7 @@ const styles = StyleSheet.create({
     },
 
     container: {
-      width:width*0.9,
+      width:'90%',
       backgroundColor:'white',
       flexDirection:"row",
       alignItems:"center",
@@ -170,7 +187,7 @@ const styles = StyleSheet.create({
     },
 
     button:{
-      width:width*0.95,
+      width:'95%',
       height:'32px',
       backgroundColor:"#fff",
       borderColor:"#5c7ae3",
@@ -181,6 +198,15 @@ const styles = StyleSheet.create({
       flexDirection:'row',
       marginBottom:10,
     },
+
+    buttonSmall:{
+      width:'auto',
+      height:'auto',
+      justifyContent:'center',
+      alignItems:'center',
+      borderStartColor:'red'
+    },
+
 
     text:{
       color: "black",

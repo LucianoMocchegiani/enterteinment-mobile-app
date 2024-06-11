@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components/native'
-import { AntDesign, MaterialIcons, FontAwesome} from '@expo/vector-icons';
-import { TouchableOpacity, View  } from 'react-native';
+import { AntDesign, MaterialIcons, FontAwesome, } from '@expo/vector-icons';
+import { TouchableOpacity, View, Linking  } from 'react-native';
 import {
 	useFonts,
 	Montserrat_200ExtraLight,
@@ -11,7 +11,7 @@ import {
 	Montserrat_700Bold,
 	Montserrat_800ExtraBold
 } from "@expo-google-fonts/montserrat";
-import { useNavigation } from '@react-navigation/native';
+import { Link, useNavigation } from '@react-navigation/native';
 
 const Container = styled.View`
 	align-items: center;
@@ -74,6 +74,9 @@ const Header = ({ login, goBack, label }) => {
 		Montserrat_700Bold,
 		Montserrat_800ExtraBold
 	});
+	const openURL = (url) => {
+		Linking.openURL(url).catch((err) => console.error("Couldn't load page", err));
+	  };
 
 	return fontsLoaded && (
 		login ? (
@@ -88,7 +91,10 @@ const Header = ({ login, goBack, label }) => {
 								<AntDesign name="arrowleft" size={24} color="white" />
 							</TouchableOpacity>
 						) : (
-								<View style={{width:36, height:36, borderRadius:36, backgroundColor:'#fff', justifyContent:'center', alignContent:'center', alignItems:'center'}}><FontAwesome style={{marginLeft:5}}name='play' size={22} color='black' /></View>
+								<>
+									<View style={{width:36, height:36, borderRadius:36, backgroundColor:'#fff', justifyContent:'center', alignContent:'center', alignItems:'center'}}><FontAwesome style={{marginLeft:5}}name='play' size={22} color='black' /></View>
+									<TouchableOpacity style={{marginLeft:20}}onPress={()=>openURL('https://wa.me/15551234567')}><View style={{width:36, height:36, borderRadius:36, backgroundColor:'#fff', justifyContent:'center', alignContent:'center', alignItems:'center', backgroundColor:'#25D366'}}><FontAwesome name='whatsapp' size={22} color='white' /></View></TouchableOpacity>
+								</>
 							)
 					}
 					{

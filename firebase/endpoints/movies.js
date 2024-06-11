@@ -86,6 +86,30 @@ export const getMovieDetail=  async (id)=>{
         return response
     }
 }
+
+export const getMovieDetailFirebase=  async (id)=>{
+    //Firebase
+    try {
+        let response = { success:false, message:'Reintente nuevamente en unos momentos' };
+        if(typeof Number(id) !== 'number'){
+            response = { success:false, message:'Id value is not valid' };
+            return response;
+        }
+        const selectedDoc = doc(db, 'movies/'+id)
+        const requestSnapshot = await getDoc(selectedDoc)
+        if (requestSnapshot.exists()){
+            const movieData = { ...requestSnapshot.data(), id: requestSnapshot.id };
+            response = { success:true, message:'Detalle del capitulo', data: movieData};
+        }else{
+            response = { success:false, message:'No existe el capitulo en la base de datos', data:null};
+        }
+        return response
+    } catch (error) {
+        let response = { success:false, message:error.message };
+        console.log(response)
+        return response
+    }
+}
 export const getMovies=  async (
     options = {
         requestType:'generic', 
@@ -134,7 +158,7 @@ export const getMovies=  async (
             return response
         }
 
-        const selectedCollection = collection(db, `movies`);
+        const selectedCollection = collection(db, `movies_faces`);
         const video = (!videoExist?null:videoExist=='sin video'?"==":videoExist=='con video'?"!=":null)
         const requestTypes = !scroll&&video?{
             generic:async ()=> await getDocs(query(selectedCollection, orderBy("title",'asc'),where('firestore_url_video', video, ""),limit(24))),

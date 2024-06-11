@@ -8,13 +8,11 @@ export const getSeasonDetail=  async (id, season)=>{
         let response = { success:false, message:'Reintente nuevamente en unos momentos' };
         if(typeof Number(id) !== 'number'){
             response = { success:false, message:'Id value is not valid' };
-            console.log(response);
             return response;
         }
         const patch = 'https://api.themoviedb.org/3/tv/'+Number(id)+'/season/'+Number(season)+'?api_key=70e07702fea1b3da15a2e2fee1d08057&language=es'
         const request = await axios.get(patch)
         response = { success:true, message:'Detalle de la temporada', data: request.data};
-        console.log(response)
         return response
     } catch (error) {  
         let response = { success:false, message:error.message };

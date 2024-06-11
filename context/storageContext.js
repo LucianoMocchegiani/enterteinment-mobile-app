@@ -1,4 +1,4 @@
-import { createContext , useContext, useEffect, useState, } from 'react';
+import { createContext , useContext, useEffect, useState, useRef} from 'react';
 import { putProfile, getProfile } from '../firebase/endpoints/profiles';
 import { useAuth } from './authContext';
 import { getUserDetail } from '../firebase/endpoints/users';
@@ -45,6 +45,21 @@ export function StorageProvider({children}){
         updated_date:null, 
         created_date:null,
     })
+    const movieDataRef = useRef({})
+    const positionMillisRef = useRef(0)
+    const durationMillisRef = useRef(0)
+
+    const setMovieDataRef = (data)=>{
+        movieDataRef.current = data
+    }
+
+    const setPositionMillis = (value)=>{
+        positionMillisRef.current = value
+    }
+
+    const setDurationMillis = (value)=>{
+        durationMillisRef.current = value
+    }
 
     const updateOnlineStateAndLastConection = async ()=>{
         await putProfile(profile)
@@ -169,9 +184,9 @@ export function StorageProvider({children}){
         }
     }
 
-    const getPositionMillisMovie = (movie)=>{
+    const getPositionMillisMovie = (movieId)=>{
         try{
-            const filterMovie = keep_watching_movies.length?[...keep_watching_movies.filter(e => e?.id === movie?.id)]:[]
+            const filterMovie = keep_watching_movies.length?[...keep_watching_movies.filter(e => e?.id === movieId)]:[]
             const exist=filterMovie.length?true:false
             if(exist){
                 let positionMillis = filterMovie[0].positionMillis?filterMovie[0].positionMillis:0
@@ -187,9 +202,9 @@ export function StorageProvider({children}){
         }
     }
     
-    const getPositionMillisSerie = (serie)=>{
+    const getPositionMillisSerie = (id)=>{
         try{
-            const filterSerie = keep_watching_series.length?[...keep_watching_series.filter(e => e?.id === serie?.id)]:[]
+            const filterSerie = keep_watching_series.length?[...keep_watching_series.filter(e => e?.id === id)]:[]
             const exist=filterSerie.length?true:false
             if(exist){
                 let positionMillis = filterSerie[0].positionMillis?filterSerie[0].positionMillis:0
@@ -199,34 +214,97 @@ export function StorageProvider({children}){
                 return {positionMillis:0}
             }
         }catch(error){
-            let response = {errorIn:positionMillisMovi ,succes:false, message:error.message}
+            let response = {errorIn:'getPositionMillisSerie' ,succes:false, message:error.message}
             console.log(response)
             return response 
+        }
+    }
+
+    const setFinishiedSeries = async (serie)=>{
+        try{
+            if(!serie){return}
+            const filterSerie = finishied_series.length?[...finishied_series.filter(e => e?.id === serie?.id)]:[]
+            const exist=filterSerie.length?true:false
+            if(!exist){
+                let removeWatchingSerie = [...profile.keep_watching_series.filter(e => e?.id != serie?.id)]
+                let response = await putProfile({...profile, finishied_series:[serie, ...profile.finishied_series], keep_watching_series:removeWatchingSerie})
+                setProfile({
+                    ...profile, finishied_series:[serie, ...profile.finishied_series], keep_watching_series:removeWatchingSerie
+                })
+                return response
+            }else{
+                let removeWatchingSerie = [...profile.keep_watching_series.filter(e => e?.id != serie?.id)]
+                let removeSerie = [...profile.finishied_series.filter(e => e?.id != serie?.id)]
+                let replaceSerie =[serie, ...removeSerie]
+                let response = await putProfile({...profile, finishied_series:replaceSerie, keep_watching_series:removeWatchingSerie})
+                setProfile({
+                    ...profile, finishied_series:replaceSerie, keep_watching_series:removeWatchingSerie
+                })
+                return response
+            }
+        }catch(error){
+            let response = {errorIn:'setFinishiedSeries',success: false, message:error.message}
+            console.log(response)
+            return response
         }
     }
 
     const setKeepWatchingSeries = async (serie)=>{
         try{
             if(!serie){return}
-            const filterSerie = keep_watching_series.length?[...keep_watching_series.filter(e => e?.id === serie?.id)]:[]
-            const exist=filterSerie.length?true:false
+            if(serie.positionMillis >= serie.durationMillis*0.90){
+                return await setFinishiedSeries(serie)
+            }else{
+                const filterSerie = keep_watching_series.length?[...keep_watching_series.filter(e => e?.id === serie?.id)]:[]
+                const exist=filterSerie.length?true:false
+                if(!exist){
+                    let response = await putProfile({...profile, keep_watching_series:[serie, ...profile.keep_watching_series]})
+                    setProfile({
+                        ...profile, keep_watching_series:[serie, ...profile.keep_watching_series]
+                    })
+                    return response
+                }else{
+                    let removeSerie = [...profile.keep_watching_series.filter(e => e?.id != serie?.id)]
+                    let replaceSerie =[serie, ...removeSerie]
+                    let response = await putProfile({...profile, keep_watching_series:replaceSerie})
+                    setProfile({
+                        ...profile, keep_watching_series:replaceSerie
+                    })
+                    return response
+                }
+            }
+           
+        }catch(error){
+            let response = {errorIn:'setKeepWatchingSeries',success: false, message:error.message}
+            console.log(response)
+            return response
+        }
+    }
+
+    const setFinishiedMovies= async (movie)=>{
+        try{
+            if(!movie){return}
+            const filterMovie = finishied_movies.length?[...finishied_movies.filter(e => e?.id === movie?.id)]:[]
+            const exist=filterMovie.length?true:false
             if(!exist){
-                let response = await putProfile({...profile, keep_watching_series:[serie, ...profile.keep_watching_series]})
+                let removeWatchingMovie = [...profile.keep_watching_movies.filter(e => e?.id != movie?.id)]
+                let response = await putProfile({...profile, finishied_movies:[movie, ...profile.finishied_movies], keep_watching_movies:removeWatchingMovie})
                 setProfile({
-                    ...profile, keep_watching_series:[serie, ...profile.keep_watching_series]
+                    ...profile, finishied_movies:[movie, ...profile.finishied_movies], keep_watching_movies:removeWatchingMovie
                 })
                 return response
             }else{
-                let removeSerie = [...profile.keep_watching_series.filter(e => e?.id != serie?.id)]
-                let replaceSerie =[serie, ...removeSerie]
-                let response = await putProfile({...profile, keep_watching_series:replaceSerie})
+                let removeWatchingMovie = [...profile.keep_watching_movies.filter(e => e?.id != movie?.id)]
+                let removeMovie = [...profile.finishied_movies.filter(e => e?.id != movie?.id)]
+                let replaceMovie =[movie, ...removeMovie]
+                let response = await putProfile({...profile, finishied_movies:replaceMovie, keep_watching_movies:removeWatchingMovie})
                 setProfile({
-                    ...profile, keep_watching_series:replaceSerie
+                    ...profile, finishied_movies:replaceMovie, keep_watching_movies:removeWatchingMovie
                 })
                 return response
             }
         }catch(error){
-            let response = {errorIn:'setKeepWatchingSeries',success: false, message:error.message}
+            let response = {errorIn:'setFinishiedMovies',success: false, message:error.message}
             console.log(response)
             return response
         }
@@ -235,22 +313,26 @@ export function StorageProvider({children}){
     const setKeepWatchingMovies= async (movie)=>{
         try{
             if(!movie){return}
-            const filterMovie = keep_watching_movies.length?[...keep_watching_movies.filter(e => e?.id === movie?.id)]:[]
-            const exist=filterMovie.length?true:false
-            if(!exist){
-                let response = await putProfile({...profile, keep_watching_movies:[movie, ...profile.keep_watching_movies]})
-                setProfile({
-                    ...profile, keep_watching_movies:[movie, ...profile.keep_watching_movies]
-                })
-                return response
+            if(movie.positionMillis >= movie.durationMillis*0.90){
+                return await setFinishiedMovies(movie)
             }else{
-                let removeMovie = [...profile.keep_watching_movies.filter(e => e?.id != movie?.id)]
-                let replaceMovie =[movie, ...removeMovie]
-                let response = await putProfile({...profile, keep_watching_movies:replaceMovie})
-                setProfile({
-                    ...profile, keep_watching_movies:replaceMovie
-                })
-                return response
+                const filterMovie = keep_watching_movies.length?[...keep_watching_movies.filter(e => e?.id === movie?.id)]:[]
+                const exist=filterMovie.length?true:false
+                if(!exist){
+                    let response = await putProfile({...profile, keep_watching_movies:[movie, ...profile.keep_watching_movies]})
+                    setProfile({
+                        ...profile, keep_watching_movies:[movie, ...profile.keep_watching_movies]
+                    })
+                    return response
+                }else{
+                    let removeMovie = [...profile.keep_watching_movies.filter(e => e?.id != movie?.id)]
+                    let replaceMovie =[movie, ...removeMovie]
+                    let response = await putProfile({...profile, keep_watching_movies:replaceMovie})
+                    setProfile({
+                        ...profile, keep_watching_movies:replaceMovie
+                    })
+                    return response
+                }
             }
         }catch(error){
             let response = {errorIn:'setKeepWatchingMovies',success: false, message:error.message}
@@ -263,15 +345,13 @@ export function StorageProvider({children}){
     const { finishied_movies, finishied_series, whaching_now_movies, whaching_now_series, my_list_movies, my_list_series, keep_watching_series, keep_watching_movies, name, avatar} = profile
 
     useEffect(()=>{
-        console.log('keep_watching_movies')
-        console.log(keep_watching_movies)
         return ()=>{
             putProfile({...profile, online:false})
         }
-    },[keep_watching_movies])
+    },[])
     
     return (
-        <storageContext.Provider value={{getPositionMillisMovie , getPositionMillisSerie, setKeepWatchingSeries, setKeepWatchingMovies, setMyListSeries, setMyListMovies, handleSetProfile, handleSetUser, profiles, rented, finishied_movies, finishied_series, whaching_now_movies, whaching_now_series, my_list_movies, my_list_series, keep_watching_series, keep_watching_movies, name, avatar, userStorage }}>
+        <storageContext.Provider value={{getPositionMillisMovie , getPositionMillisSerie, setKeepWatchingSeries, setKeepWatchingMovies, setMyListSeries, setMyListMovies, handleSetProfile, handleSetUser, profiles, rented, finishied_movies, finishied_series, whaching_now_movies, whaching_now_series, my_list_movies, my_list_series, keep_watching_series, keep_watching_movies, name, avatar, userStorage, setPositionMillis, positionMillisRef, setMovieDataRef, movieDataRef, setDurationMillis, durationMillisRef}}>
             {children}
         </storageContext.Provider>
     )

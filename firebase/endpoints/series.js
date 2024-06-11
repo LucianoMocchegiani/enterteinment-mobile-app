@@ -102,7 +102,6 @@ export const getSerieDetail=  async (id)=>{
         const patch = 'https://api.themoviedb.org/3/tv/'+Number(id)+'?api_key=70e07702fea1b3da15a2e2fee1d08057&language=es'
         const request = await axios.get(patch)
         response = { success:true, message:'Detalle de la serie', data: request.data};
-        console.log(response)
         return response
     } catch (error) {
         let response = { success:false, message:error.message };
@@ -158,7 +157,7 @@ export const getSeries=  async (
             return response
         }
 
-        const selectedCollection = collection(db, `series`);
+        const selectedCollection = collection(db, `series_faces`);
         const video = (!videoExist?null:videoExist=='sin video'?"==":videoExist=='con video'?"!=":null)
         const requestTypes = !scroll&&video?{
             generic:async ()=> await getDocs(query(selectedCollection, orderBy("name",'asc'),where('firestore_url_video', video, ""),limit(24))),

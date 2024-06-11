@@ -6,6 +6,9 @@ import Genres from '../components/GenresForMovies'
 import Platforms from '../components/SelectPlatform'
 import AllMovies from '../components/AllMovies'
 import FrontPage from '../components/FrontPage'
+import KeepWatchingMovies from '../components/KeepWatchingMovies'
+import RecomendationMovies from '../components/RecommendationMovie'
+
 
 const MoviesSection = () => {
 
@@ -39,13 +42,15 @@ const MoviesSection = () => {
 					<AllMovies selectGenre={selectGenre} selectPlatform={selectPlatform} selectLabel={selectLabel}/>
 				</>:
 				<>
-					
-					{/* <KeepWatchingMovies/> */}
-					<Movies text='Comedia' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id: 35,name: "Comedia"}} />
-					<Movies text='Familia' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:10751, name:'Familia'}} />
-					<Movies text='Acción' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id: 28,name: "Acción"}} />
-					<Movies text='Ciencia ficción' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:878, name:'Ciencia ficción'}} />
-					<Movies text='Romance' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:10749 ,name:'Romance'}} />
+					<KeepWatchingMovies/>
+					<RecomendationMovies label={selectLabel} platform={selectPlatform}/>
+					<>
+						<Movies text='Comedia' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id: 35,name: "Comedia"}} />
+						<Movies text='Familia' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:10751, name:'Familia'}} />
+						<Movies text='Acción' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id: 28,name: "Acción"}} />
+						<Movies text='Ciencia ficción' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:878, name:'Ciencia ficción'}} />
+						<Movies text='Romance' label={selectLabel} requestType = {'genres'} platform={selectPlatform} genre={{id:10749 ,name:'Romance'}} />
+					</>
 				</>
 				}		
 			</ScrollView >

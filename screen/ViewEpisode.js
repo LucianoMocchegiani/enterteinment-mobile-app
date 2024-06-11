@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Dimensions } from 'react-native'
+import { Dimensions, ScrollView, View } from 'react-native'
 import { getSerieDetail } from '../firebase/endpoints/series'
-import { getEpisodeDetail } from '../firebase/endpoints/episodes'
+import { getEpisodeDetailFirebase, getEpisodeDetail } from '../firebase/endpoints/episodes'
 import { getSeasonDetail } from '../firebase/endpoints/seasons'
 import styled from 'styled-components/native'
 import { StatusBar } from 'expo-status-bar'
-import Header from '../components/Header'
-import { Video } from 'expo-av';
 import { useRoute } from '@react-navigation/native'
 import SelectComponent from '../components/Select'
 import {
@@ -20,13 +18,9 @@ import {
 } from "@expo-google-fonts/montserrat";
 import { Feather } from '@expo/vector-icons'
 import CheckMyList from '../components/ChekMyListSerie'
-
-const Container = styled.ScrollView`
-	flex: 1;
-	background-color: #000;
-    min-height: ${(Dimensions.get('window').height)}px;
-	height: auto;
-`
+import { STREAMING_MOVIES_URL, POSTER_PATCH_URL, STREAMING_SERIES_URL } from '@env';
+import VideoPlayerEpisode from '../components/videoPlayerEpisode';
+import { useStyles } from '../context/stylesContext';
 
 const Title = styled.Text`
     color: white;
@@ -62,28 +56,6 @@ const TextButton = styled.Text`
 	color: #fff;
 	font-size: 13px;
 	margin-top: 3px;
-`
-const Play = styled.TouchableOpacity`
-	flex-direction: row;
-	background-color: #fff;
-	width: 95%;
-	height: 32px;
-	border-radius: 2px;
-	align-items: center;
-    justify-content: center;
-    margin: 10px;
-`
-
-const TextButtonPlay = styled.Text`
-	font-size: 15px;
-	font-weight: bold;
-	padding-left: 5px;
-`
-
-const ActionButtons = styled.View`
-    flex-direction: column;
-    width: 100%;
-    align-items: center;
 `
 
 const MovieDescription = styled.Text`
@@ -123,14 +95,8 @@ const TagWrapper = styled.View`
     align-items: center;
 `
 
-const ActionButtons2 = styled.View`
-    flex-direction :row;
-    justify-content: center;
-    margin: 20px;
-    align-items: center;
-`
-
-const Episode = ({array, setSelect, select, episode, setEpisode, serie_id}) =>{
+const Episode = ({array, setSelect, select, episode, setEpisode, serie_id, fullscreen}) =>{
+    
     const handleSelectEpisode = (e)=>{
         setSelect({
             ...select,
@@ -141,7 +107,8 @@ const Episode = ({array, setSelect, select, episode, setEpisode, serie_id}) =>{
         })
     }
     const handleSetEpisode= async ()=>{
-        const {success, message, data} = await getEpisodeDetail(serie_id, select.season.season_number, select.episode.episode_number)
+        const episodeData = await getEpisodeDetail(serie_id, select.season.season_number, select.episode.episode_number)
+        const {success, message, data} = await getEpisodeDetailFirebase(episodeData.data?.id)
         setEpisode({
             ...episode,
             success: success, 
@@ -161,12 +128,13 @@ const Episode = ({array, setSelect, select, episode, setEpisode, serie_id}) =>{
             arraySelects={array}
             selectFunction={handleSelectEpisode}
             selected={episode?.data?episode.data:''}
+            icon={'book-play-outline'}
+            small={fullscreen}
         />
     )
 }
 
-
-const Season = ({array, setSelect, select, season, setSeason, serie_id}) =>{
+const Season = ({array, setSelect, select, season, setSeason, serie_id, fullscreen}) =>{
     const handleSelectSeason = (e)=>{
         setSelect({
             episode:{
@@ -198,12 +166,16 @@ const Season = ({array, setSelect, select, season, setSeason, serie_id}) =>{
             arraySelects={array}
             selectFunction={handleSelectSeason}
             selected={season?.data?season.data:''}
+            icon={'book-play-outline'}
+            small={fullscreen}
         />
     )
 }
 
 const ViewEpisode = ({ navigation }) => {
     const {params} =  useRoute()
+    const {vertical}= useStyles()
+    const [ fullscreen, setFullscreen ]= useState(false);
     const [state, setState]= useState({
         success: null, 
         message: null,
@@ -231,7 +203,6 @@ const ViewEpisode = ({ navigation }) => {
             data: data
         })
     }
-    
     useEffect(()=>{
         if(!state.success){
             handleSetState()
@@ -261,21 +232,19 @@ const ViewEpisode = ({ navigation }) => {
                 barStyle='light-content'
             />
 
-            <Container>
-                <Header login={true} goBack={navigation.goBack} />
-                <Video
-                    source={{
-                        uri: `https://firebasestorage.googleapis.com/v0/b/entertainment-app-87f62.appspot.com/o/s-videos%2F${episode?.data?.id}?alt=media&token=6bf5d8cf-f5e3-4bcb-bdaa-0af7aee9f8db`
-                    }}
-                    isMuted={false}
-                    useNativeControls={false}
-                    shouldPlay={true}
-                    style={{ height: 225, marginTop: 15 }}
-                    resizeMode="contain"
-                    usePoster={true}
-                    posterSource={{ uri: state?.data?.poster_path?"https://image.tmdb.org/t/p/w500"+ season?.data?.poster_path:null }}
-                    useNativeControls={true}
-                />  
+            <ScrollView style={{flex: 1, backgroundColor:'#000',}} contentContainerStyle={fullscreen?{ flexGrow: 1, justifyContent: 'center' }:{}}>
+                <VideoPlayerEpisode
+                    data={episode?.data}
+                    posterPatch={state?.data?.poster_path?POSTER_PATCH_URL+state?.data?.poster_path:null}
+                    videoPatch={'https://firebasestorage.googleapis.com/v0/b/entertainment-app-87f62.appspot.com/o/m-videos%2F'+1014590+'?alt=media&token=fb2e31d1-e141-4695-97e8-f184f5907fcd'}
+                    // videoPatch={episode?.data?.firestore_url_video?STREAMING_SERIES_URL+'/'+episode.data.firestore_url_video:null}
+                    id={episode?.data?.id}
+                    episode={{serie_id:params?.id, array:season?.data?.episodes, setSelect:setSelect ,select:select, episode:episode, setEpisode:setEpisode}}
+                    season={{serie_id:params?.id, array:state?.data?.seasons, setSelect:setSelect ,select:select, season:season, setSeason:setSeason}}
+                    fullscreen={fullscreen}
+                    setFullscreen={setFullscreen}
+                />
+                {!fullscreen?<View >
                 <Title>{state?.data?.title}</Title>
                 <MovieSubDetails>
                     <MovieBadge>13+</MovieBadge>
@@ -290,16 +259,10 @@ const ViewEpisode = ({ navigation }) => {
 				    </Button>
                     <CheckMyList serie={state.data}/>
                 </MovieSubDetails>
-                <ActionButtons>
-                    {/* <Play 
-                        onPress={playAsync()}
-                        activeOpacity={0.5}>
-                        <Feather name='play' size={22} color='black' />
-                        <TextButtonPlay>Play</TextButtonPlay>
-                    </Play> */}
+                <View style={{flexDirection:'col',justifyContent:'center', alignItems: 'center', width:'100%'}}>
                     <Season serie_id={params?.id} array={state?.data?.seasons} setSelect={setSelect} select={select} season={season} setSeason={setSeason}/>
                     <Episode serie_id={params?.id} array={season?.data?.episodes} setSelect={setSelect} select={select} episode={episode} setEpisode={setEpisode}/>
-                </ActionButtons>
+                </View>
                 <MovieDescription>
                     {episode?.data?.overview}
                 </MovieDescription>
@@ -325,10 +288,11 @@ const ViewEpisode = ({ navigation }) => {
                         })
                     }
                 </Tags>
-            </Container>
+                </View>:null}
+            </ScrollView>
         </>
     ) : (
-            <Container />
+            <ScrollView style={{flex: 1, backgroundColor:'#000',}} contentContainerStyle={fullscreen?{ flexGrow: 1, justifyContent: 'center' }:{}}/>
         )
 }
 

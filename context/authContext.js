@@ -1,6 +1,7 @@
 import {createContext , useContext, useEffect, useState} from 'react';
 import {signInWithPopup ,GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut} from 'firebase/auth';
 import {auth} from '../firebase/firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 export const authContext = createContext();
 export function useAuth (){
@@ -10,6 +11,14 @@ export function useAuth (){
 
 export function AuthProvider({children}){
     const [user, setUser] = useState(null)
+
+    const saveToken = async (token) => {
+        try {
+            await AsyncStorage.setItem('userToken', token);
+        } catch (error) {
+            console.error('Error al guardar el token:', error);
+        }
+    };
     
     const signup = async (email , password ) => {
         try{
@@ -23,6 +32,9 @@ export function AuthProvider({children}){
     const login = async (email, password ) =>{
         try{
             await signInWithEmailAndPassword(auth, email, password)
+            const currentUser = auth.currentUser;
+            const token = await currentUser.getIdToken();
+            await saveToken(token);
             return ({success:true , message:'Autentificacion exitosa'})
         }
         catch(error){
@@ -32,6 +44,7 @@ export function AuthProvider({children}){
     const logout = async () => {
         try{
             await signOut(auth)
+            await AsyncStorage.removeItem('userToken');
             return ({success:true , message:'Sesion cerrada'})
         }
         catch(error){
@@ -43,8 +56,14 @@ export function AuthProvider({children}){
         return signInWithPopup(auth, googleProvider)
     }
     useEffect(() => {
-        onAuthStateChanged(auth, currentUser =>{
-            setUser(currentUser)
+        onAuthStateChanged(auth, async currentUser =>{
+            setUser(currentUser);
+            if (currentUser) {
+                const token = await currentUser.getIdToken();
+                await saveToken(token);
+            } else {
+                await AsyncStorage.removeItem('userToken');
+            }
         })
     },[])
     return (

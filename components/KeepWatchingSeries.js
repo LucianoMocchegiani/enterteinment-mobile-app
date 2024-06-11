@@ -1,12 +1,9 @@
 import React from 'react'
-import { Dimensions, TouchableOpacity } from 'react-native'
+import { Dimensions, TouchableOpacity, View, FlatList, Image } from 'react-native'
 import styled from 'styled-components/native'
 import { useNavigation } from '@react-navigation/native'
 import { useStorage } from '../context/storageContext'
-const Container = styled.View`
-	padding: 20px 0;
-`
-
+import { useStyles } from '../context/stylesContext'
 const Label = styled.Text`
 	color: #fff;
 	font-weight: 700;
@@ -32,30 +29,40 @@ const MovieCard = styled.View`
 
 const KeepWatchingSeries = ()=>{
 	const {keep_watching_series} = useStorage()
+    const {height, width} = useStyles()
     const navigation = useNavigation()
 	return (
-		<>{keep_watching_series.length?
-            <Container>
-                <Label>Seguir viendo</Label>
-                <MovieScroll horizontal>
-                    {keep_watching_series.map((movie, index) => {
-                        return (
-                            <TouchableOpacity activeOpacity={0.5} key={movie.id+index} onPress={() => {
-                                navigation.navigate("ViewEpisode", {
-                                    id: movie.id,
-                                })
-                            }}>
-                                <MovieCard>
-                                    <MoviePoster resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+movie.poster_path:null }} />
-                                </MovieCard>
-                            </TouchableOpacity>
-                        )
-                    })}
-                </MovieScroll>
-		    </Container>
-            :null}
-        </>
-        
+        <>{keep_watching_series.length?<View style={{paddingHorizontal:10}}>
+        <Label>Seguir viendo</Label>
+        <FlatList 
+            horizontal 
+            data={keep_watching_series}
+            keyExtractor={(serie, index)=> serie.id + index}
+            renderItem ={({ item:serie})=>(
+                <TouchableOpacity activeOpacity={0.5} onPress={() => {
+                    navigation.navigate("ViewEpisode", {
+                        id: serie.serie_id,
+                        season_number : serie.season_number?serie.season_number:null, 
+                        episode_number : serie.episode_number?serie.season_number:null, 
+                    })
+                }}>
+                    <View style={{paddingHorizontal:5}}>
+                    <Image
+                        style={{
+                            width: width * 0.35,
+                            height: width * 0.55,
+                            maxWidth: 200,
+                            maxHeight: 350,
+                        }}
+                        source={{
+                            uri: serie?.still_path ? 'https://image.tmdb.org/t/p/w500' + serie.still_path : null,
+                        }}
+                    />
+                    </View>
+                </TouchableOpacity>    
+            )}
+        />
+    </View>:null}</>
 	)
 }
 

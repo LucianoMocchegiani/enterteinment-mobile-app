@@ -1,7 +1,6 @@
 import {createContext , useContext, useEffect, useState} from 'react';
 import { useOrientation } from '../orientation/UseOrientation';
 import { Dimensions } from 'react-native'
-const { width, height } = Dimensions.get("window")
 export const stylesContext = createContext();
 export function useStyles (){
     const context = useContext(stylesContext )
@@ -11,33 +10,36 @@ export function useStyles (){
 export function StylesProvider({children}){
     const [styles, setStyles] = useState({
         width:width, 
-        heigh:height
+        heigh:height,
+        vertical:true
     })
     const orientacion = useOrientation()
     useEffect(() => {
+        
         const changeStyles= ()=>{
             const { width, height } = Dimensions.get("window")
             if(height<width){
                 setStyles({
                     width: width,
                     height:width,
+                    vertical:false,
                 })
-            }else(
+            }else{
                 setStyles({
                     width: width,
                     height: height,
+                    vertical:true,
                 })
-            )
-           
+            }
         }
         changeStyles()
     },[orientacion])
 
     console.warn(styles)
 
-    const { width, height } = styles
+    const { width, height, vertical } = styles
     return (
-        <stylesContext.Provider value={{width, height}}>
+        <stylesContext.Provider value={{width, height,vertical}}>
             {children}
         </stylesContext.Provider>
     )

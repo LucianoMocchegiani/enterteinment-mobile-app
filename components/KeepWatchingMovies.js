@@ -1,11 +1,9 @@
 import React from 'react'
-import { Dimensions, TouchableOpacity } from 'react-native'
+import { Dimensions, TouchableOpacity, View, Image, FlatList } from 'react-native'
 import styled from 'styled-components/native'
 import { useNavigation } from '@react-navigation/native'
 import { useStorage } from '../context/storageContext'
-const Container = styled.View`
-	padding: 20px 0;
-`
+import { useStyles } from '../context/stylesContext'
 
 const Label = styled.Text`
 	color: #fff;
@@ -32,30 +30,38 @@ const MovieCard = styled.View`
 
 const KeepWatchingMovies = ()=>{
 	const {keep_watching_movies} = useStorage()
+    const {height, width} = useStyles()
     const navigation = useNavigation()
-	return (
-		<>{keep_watching_movies.length?
-            <Container>
-                <Label>Seguir viendo</Label>
-                <MovieScroll horizontal>
-                    {keep_watching_movies.map((movie, index) => {
-                        return (
-                            <TouchableOpacity activeOpacity={0.5} key={movie.id+index} onPress={() => {
-                                navigation.navigate("ViewEpisode", {
-                                    id: movie.id,
-                                })
-                            }}>
-                                <MovieCard>
-                                    <MoviePoster resizeMode='cover' source={{ uri: movie?.poster_path?"https://image.tmdb.org/t/p/w500"+movie.poster_path:null }} />
-                                </MovieCard>
-                            </TouchableOpacity>
-                        )
-                    })}
-                </MovieScroll>
-		    </Container>
-            :null}
-        </>
-        
+    return (
+        <>{keep_watching_movies.length?<View style={{paddingHorizontal:10}}>
+        <Label>Seguir viendo</Label>
+        <FlatList 
+            horizontal 
+            data={keep_watching_movies}
+            keyExtractor={(movie, index)=> movie.id + index}
+            renderItem ={({ item:movie})=>(
+                <TouchableOpacity activeOpacity={0.5} onPress={() => {
+                    navigation.navigate("ViewEpisode", {
+                        id: movie.id,
+                    })
+                }}>
+                    <View style={{paddingHorizontal:5}}>
+                    <Image
+                        style={{
+                            width: width * 0.35,
+                            height: width * 0.55,
+                            maxWidth: 200,
+                            maxHeight: 350,
+                        }}
+                        source={{
+                            uri: movie?.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : null,
+                        }}
+                    />
+                    </View>
+                </TouchableOpacity>    
+            )}
+        />
+    </View>:null}</>
 	)
 }
 

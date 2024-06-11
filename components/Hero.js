@@ -64,7 +64,7 @@ const Hero = ({ movie, type}) => {
                         movie?.genres?.map((genre, i) => {
                             return (
 								<>
-									<MenuTag key={genre.id}>{genre.name}</MenuTag>
+									<MenuTag key={genre.id+i}>{genre.name}</MenuTag>
 									{(i+1)!=movie?.genres?.length?<Separator key={i}/>:null}
 								</>
                             )
