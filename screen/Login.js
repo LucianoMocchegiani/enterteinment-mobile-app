@@ -64,7 +64,6 @@ const Login = ({ navigation }) => {
     const [password, setPassword] = useState('');
     const { height, width } = useStyles()
     const { login, } = useAuth()
-    const { handleSetUser } = useStorage()
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -80,7 +79,6 @@ const Login = ({ navigation }) => {
                 setPassword('')
                 setLoading(false)
                 navigation.replace("Splash");
-                
             }else{
                 setEmail('')
                 setPassword('')

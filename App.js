@@ -18,6 +18,7 @@ import Profiles from './screen/Profiles'
 import ViewEpisode from './screen/ViewEpisode'
 import SerieDetail from './screen/SerieDetail'
 import SeasonDetail from './screen/SeasonDetail'
+import Reconect from './screen/Reconect'
 import { LogBox } from 'react-native';
 // LogBox.ignoreLogs(['Warning: ...']);
 // LogBox.ignoreAllLogs();
@@ -36,7 +37,7 @@ const Navigation = () => {
       <StorageProvider>
       <StylesProvider>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1, }} keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}>
-        <Stack.Navigator initialRouteName="Splash" screenOptions={screenOptions}>
+        <Stack.Navigator initialRouteName="Reconect" screenOptions={screenOptions}>
           <Stack.Screen name="Login" component={Login} options={{
             gestureEnabled: true,
             animationEnabled: true,
@@ -58,6 +59,7 @@ const Navigation = () => {
           <Stack.Screen name="Profiles" component={Profiles} />
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="Splash" component={Splash} />
+          <Stack.Screen name="Reconect" component={Reconect} />
         </Stack.Navigator>
       </KeyboardAvoidingView>
       </StylesProvider>

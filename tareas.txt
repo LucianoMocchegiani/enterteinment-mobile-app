@@ -1,2 +1,3 @@
 limitar las cargas de contenido en keep_watching, myList, 
-Array.prototype.pop() // elimina el ultimo item de un array
+Array.prototype.pop() // elimina el ultimo item de un array,
+eas build --platform android
