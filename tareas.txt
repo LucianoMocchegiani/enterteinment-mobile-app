@@ -1,3 +1,5 @@
 limitar las cargas de contenido en keep_watching, myList, 
 Array.prototype.pop() // elimina el ultimo item de un array,
+hacer random genros para las diferentes vistas de carteleras,
+meter categoria lo mas nuevo
 eas build --platform android

@@ -37,7 +37,7 @@ const Navigation = () => {
       <StorageProvider>
       <StylesProvider>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1, }} keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}>
-        <Stack.Navigator initialRouteName="Reconect" screenOptions={screenOptions}>
+        <Stack.Navigator initialRouteName="Splash" screenOptions={screenOptions}>
           <Stack.Screen name="Login" component={Login} options={{
             gestureEnabled: true,
             animationEnabled: true,

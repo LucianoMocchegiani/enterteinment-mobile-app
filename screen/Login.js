@@ -67,7 +67,7 @@ const Login = ({ navigation }) => {
 
     const handleLogin = async () => {
         if (!email || !password) {
-            alert("All fields are mandatory");
+            alert("Completa los campos!");
             setPassword("");
             setEmail("");
             return;

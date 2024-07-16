@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components/native'
 import { AntDesign, MaterialIcons, FontAwesome, } from '@expo/vector-icons';
 import { TouchableOpacity, View, Linking  } from 'react-native';
@@ -11,7 +11,8 @@ import {
 	Montserrat_700Bold,
 	Montserrat_800ExtraBold
 } from "@expo-google-fonts/montserrat";
-import { Link, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { getNumberPhone } from '../firebase/endpoints/utils';
 
 const Container = styled.View`
 	align-items: center;
@@ -65,6 +66,12 @@ const HeaderLeftSide = styled.View`
 `
 
 const Header = ({ login, goBack, label }) => {
+	const [ wspNumber, setWspNumber ] = useState(null)
+	const handleGet= async()=>{
+		const response = await getNumberPhone()
+		setWspNumber(response?.data)
+	}
+	handleGet()
 	const navigation = useNavigation();
 	let [fontsLoaded] = useFonts({
 		Montserrat_200ExtraLight,
@@ -76,7 +83,7 @@ const Header = ({ login, goBack, label }) => {
 	});
 	const openURL = (url) => {
 		Linking.openURL(url).catch((err) => console.error("Couldn't load page", err));
-	  };
+	};
 
 	return fontsLoaded && (
 		login ? (
@@ -93,7 +100,7 @@ const Header = ({ login, goBack, label }) => {
 						) : (
 								<>
 									<View style={{width:36, height:36, borderRadius:36, backgroundColor:'#fff', justifyContent:'center', alignContent:'center', alignItems:'center'}}><FontAwesome style={{marginLeft:5}}name='play' size={22} color='black' /></View>
-									<TouchableOpacity style={{marginLeft:20}}onPress={()=>openURL('https://wa.me/15551234567')}><View style={{width:36, height:36, borderRadius:36, backgroundColor:'#fff', justifyContent:'center', alignContent:'center', alignItems:'center', backgroundColor:'#25D366'}}><FontAwesome name='whatsapp' size={22} color='white' /></View></TouchableOpacity>
+									<TouchableOpacity style={{marginLeft:20}}onPress={()=>openURL(`https://wa.me/${wspNumber?wspNumber:1127126514}`)}><View style={{width:36, height:36, borderRadius:36, backgroundColor:'#fff', justifyContent:'center', alignContent:'center', alignItems:'center', backgroundColor:'#25D366'}}><FontAwesome name='whatsapp' size={22} color='white' /></View></TouchableOpacity>
 								</>
 							)
 					}
